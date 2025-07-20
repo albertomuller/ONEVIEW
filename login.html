@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volvo OneView - Login</title>
+    <!-- Replace tailwind CDN with this -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            corePlugins: {
+                preflight: false,
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --volvo-blue: #0A5894;
+            --volvo-blue-dark: #083D6B;
+            --volvo-blue-light: #1B6AA8;
+            --volvo-gray: #3A4A5C;
+            --volvo-light-gray: #F4F6F8;
+            --volvo-white: #FFFFFF;
+            --volvo-accent: #00A8E6;
+            --volvo-success: #00C853;
+            --volvo-warning: #FF6B35;
+            --volvo-shadow: rgba(10, 88, 148, 0.15);
+            --volvo-shadow-light: rgba(10, 88, 148, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, var(--volvo-shadow-light) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, var(--volvo-shadow-light) 0%, transparent 50%);
+            animation: backgroundShift 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .login-container {
+            background: var(--volvo-white);
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 40px var(--volvo-shadow),
+                0 5px 15px var(--volvo-shadow-light);
+            width: 100%;
+            max-width: 400px;
+            padding: 2.5rem 2rem;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .brand-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-ring {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid var(--volvo-accent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        .logo-container:hover .logo-ring {
+            animation-play-state: paused;
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+
+        .logo-container img {
+            width: 60px;
+            height: 60px;
+            filter: drop-shadow(0 4px 12px var(--volvo-shadow));
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .logo-container:hover img {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .brand-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--volvo-blue);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-subtitle {
+            font-size: 0.9rem;
+            color: var(--volvo-gray);
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .divider {
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--volvo-blue), var(--volvo-accent));
+            margin: 1.5rem auto;
+            border-radius: 2px;
+            animation: expand 1s ease-out 0.5s both;
+        }
+
+        @keyframes expand {
+            from { width: 0; }
+            to { width: 50px; }
+        }
+
+        .main-actions {
+            margin-bottom: 1.5rem;
+        }
+
+        .primary-button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            transform: translateY(0);
+        }
+
+        .primary-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .primary-button:hover::before {
+            left: 100%;
+        }
+
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--volvo-shadow);
+        }
+
+        .primary-button:active {
+            transform: translateY(0);
+        }
+
+        .primary-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .entra-button {
+            background: linear-gradient(135deg, var(--volvo-blue), var(--volvo-blue-light));
+            color: white;
+            box-shadow: 0 4px 15px var(--volvo-shadow);
+        }
+
+        .demo-button {
+            background: linear-gradient(135deg, var(--volvo-gray), #4a5568);
+            color: white;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .demo-button.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .advanced-section {
+            margin-top: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            pointer-events: none;
+        }
+
+        .advanced-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .advanced-toggle {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .advanced-toggle button {
+            background: none;
+            border: none;
+            color: var(--volvo-gray);
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0 auto;
+            border: 1px solid transparent;
+        }
+
+        .advanced-toggle button:hover {
+            background: var(--volvo-light-gray);
+            color: var(--volvo-blue);
+            border-color: var(--volvo-accent);
+        }
+
+        .credential-fields {
+            background: var(--volvo-light-gray);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.875rem 0.875rem 0.875rem 2.5rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--volvo-white);
+            transition: all 0.3s ease;
+            outline: none;
+            color: var(--volvo-gray);
+            font-weight: 500;
+        }
+
+        .input-field::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .input-field:focus {
+            border-color: var(--volvo-accent);
+            box-shadow: 0 0 0 3px rgba(0, 168, 230, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus + .input-icon {
+            color: var(--volvo-accent);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .credential-submit {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--volvo-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .credential-submit:hover:not(:disabled) {
+            background: var(--volvo-blue-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--volvo-shadow);
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            border: 1px solid;
+            font-weight: 500;
+            animation: messageSlide 0.4s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-message {
+            background: rgba(255, 107, 53, 0.1);
+            color: var(--volvo-warning);
+            border-color: rgba(255, 107, 53, 0.3);
+        }
+
+        .success-message {
+            background: rgba(0, 200, 83, 0.1);
+            color: var(--volvo-success);
+            border-color: rgba(0, 200, 83, 0.3);
+        }
+
+        .security-footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--volvo-gray);
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--volvo-light-gray);
+            border-radius: 8px;
+            opacity: 0.8;
+        }
+
+        .security-footer i {
+            color: var(--volvo-accent);
+        }
+
+        .loading-spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .developer-info {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            font-size: 0.7rem;
+            color: var(--volvo-gray);
+            text-align: right;
+            line-height: 1.4;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 15px var(--volvo-shadow-light);
+            animation: fadeIn 1s ease-out 1.5s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .developer-info strong {
+            color: var(--volvo-blue);
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Click counter indicator */
+        .click-counter {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--volvo-accent);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .click-counter.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Responsive design */
+        @media (max-width: 640px) {
+            .login-container {
+                margin: 1rem;
+                padding: 2rem 1.5rem;
+                max-width: calc(100vw - 2rem);
+            }
+
+            .brand-title {
+                font-size: 1.6rem;
+            }
+
+            .developer-info {
+                bottom: 0.5rem;
+                right: 0.5rem;
+                font-size: 0.65rem;
+                padding: 0.5rem 0.75rem;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .primary-button:focus-visible,
+        .input-field:focus-visible {
+            outline: 2px solid var(--volvo-accent);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="brand-section">
+            <div class="logo-container">
+                <div class="logo-ring"></div>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Volvo-Iron-Mark-Black.svg" alt="Volvo Group Logo">
+                <div class="click-counter" id="clickCounter">0</div>
+            </div>
+            <h1 class="brand-title">Volvo OneView</h1>
+            <p class="brand-subtitle">Strategic Command Center</p>
+            <div class="divider"></div>
+        </div>
+
+        <div id="errorMessage" class="message error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="errorText">Authentication failed. Please verify your credentials.</span>
+        </div>
+
+        <div id="successMessage" class="message success-message">
+            <i class="fas fa-check-circle"></i>
+            <span id="successText">Authentication successful! Redirecting...</span>
+        </div>
+
+        <div class="main-actions">
+            <button type="button" id="entraIdLogin" class="primary-button entra-button">
+                <i class="fab fa-microsoft"></i>
+                <span>Continue with Entra ID</span>
+            </button>
+
+            <button type="button" id="demoAccess" class="primary-button demo-button hidden">
+                <i class="fas fa-play"></i>
+                <span>Demo Access</span>
+            </button>
+        </div>
+
+        <div class="advanced-section" id="advancedSection">
+            <div class="advanced-toggle">
+                <button type="button" id="toggleCredentials">
+                    <i class="fas fa-key"></i>
+                    <span>Advanced Login</span>
+                </button>
+            </div>
+
+            <div class="credential-fields" id="credentialFields" style="display: none;">
+                <form id="loginForm">
+                    <div class="input-group">
+                        <input type="text" id="username" class="input-field" placeholder="Username" required autocomplete="username">
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" id="password" class="input-field" placeholder="Password" required autocomplete="current-password">
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+
+                    <button type="submit" id="credentialSubmit" class="credential-submit">
+                        <span id="submitText">Authenticate</span>
+                        <span id="submitLoading" class="hidden">
+                            <div class="loading-spinner"></div>
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="security-footer">
+            <i class="fas fa-shield-alt"></i>
+            <span>Secured by Volvo Group</span>
+        </div>
+    </div>
+
+    <div class="developer-info">
+        <div>Enterprise Solution by</div>
+        <div><strong>Alberto Müller</strong></div>
+        <div>Digital Product Manager LATAM</div>
+    </div>
+
+    <script>
+        // === CONFIGURAÇÕES GLOBAIS ===
+        let logoClickCount = 0;
+        let logoClickTimer = null;
+        const clickCounter = document.getElementById('clickCounter');
+
+        // Credenciais locais
+        const localCredentials = {
+            "VFSDITLATAM": {
+                password: "Vfsalberto2025",
+                name: "VFS DIT LATAM User"
+            },
+            "demo": {
+                password: "demo123",
+                name: "Demo User"
+            }
+        };
+
+        // === FUNÇÕES UTILITÁRIAS ===
+        function setLoadingState(loading) {
+            const credentialSubmit = document.getElementById('credentialSubmit');
+            const submitText = document.getElementById('submitText');
+            const submitLoading = document.getElementById('submitLoading');
+            
+            credentialSubmit.disabled = loading;
+            if (loading) {
+                submitText.style.display = 'none';
+                submitLoading.classList.remove('hidden');
+            } else {
+                submitText.style.display = 'block';
+                submitLoading.classList.add('hidden');
+            }
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const errorText = document.getElementById('errorText');
+            
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            
+            successText.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function storeAuthSession(user) {
+            const sessionData = {
+                username: user.username,
+                name: user.name,
+                loginTime: new Date().toISOString(),
+                isAuthenticated: true,
+                expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                authType: user.authType || 'local'
+            };
+            
+            try {
+                localStorage.setItem('volvo_oneview_session', JSON.stringify(sessionData));
+                console.log("Session stored:", sessionData);
+                return true;
+            } catch (error) {
+                console.error("Error storing session:", error);
+                throw new Error("Failed to store session");
+            }
+        }
+
+        function verifyCredentials(username, password) {
+            if (localCredentials[username] && localCredentials[username].password === password) {
+                return {
+                    success: true,
+                    user: {
+                        username: username,
+                        name: localCredentials[username].name || username
+                    }
+                };
+            }
+            return { success: false, error: "Invalid credentials" };
+        }
+
+        // === VERIFICAÇÃO DE SESSÃO EXISTENTE (CORRIGIDA FINAL) ===
+        function checkExistingAuth() {
+            // 1. Verificar apenas parâmetros OAuth específicos
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            const hasOAuthParams = 
+                urlParams.get('code') || 
+                urlParams.get('state') || 
+                urlParams.get('session_state') ||
+                urlParams.get('admin_consent') ||
+                urlParams.get('error');
+
+            if (hasOAuthParams) {
+                console.log("OAuth flow detected - SKIPPING session check");
+                return false;
+            }
+            
+            // 2. Verificar sessão local
+            const localSession = localStorage.getItem('volvo_oneview_session');
+            if (localSession) {
+                try {
+                    const session = JSON.parse(localSession);
+                    const now = new Date();
+                    const expires = new Date(session.expires);
+                    
+                    if (session.isAuthenticated && now < expires) {
+                        console.log("Valid session found, redirecting to index");
+                        showSuccess("Active session found. Redirecting...");
+                        setTimeout(() => {
+                            // Use caminho absoluto
+                            window.location.replace('/index.html');
+                        }, 1200);
+                        return true;
+                    } else {
+                        console.log("Session expired, removing");
+                        localStorage.removeItem('volvo_oneview_session');
+                    }
+                } catch (error) {
+                    console.error("Error checking session:", error);
+                    localStorage.removeItem('volvo_oneview_session');
+                }
+            }
+            
+            console.log("No valid session found, showing login form");
+            return false;
+        }
+
+        // === EVENT LISTENERS ===
+        document.addEventListener('DOMContentLoaded', function() {
+            // AGUARDAR um pouco antes de verificar sessão para dar tempo ao MSAL inicializar
+            setTimeout(() => {
+                // Verificar autenticação existente APENAS se não estamos em OAuth flow
+                if (!checkExistingAuth()) {
+                    console.log("No existing session, showing login form");
+                }
+            }, 500); // Aguardar 500ms
+
+            // Logo click counter
+            const logoContainer = document.querySelector('.logo-container');
+            logoContainer.addEventListener('click', function() {
+                logoClickCount++;
+                clickCounter.textContent = logoClickCount;
+                clickCounter.classList.add('show');
+                
+                if (logoClickTimer) clearTimeout(logoClickTimer);
+                
+                logoClickTimer = setTimeout(() => {
+                    logoClickCount = 0;
+                    clickCounter.classList.remove('show');
+                }, 3000);
+                
+                if (logoClickCount >= 3) {
+                    document.getElementById('advancedSection').classList.add('visible');
+                    const demoButton = document.getElementById('demoAccess');
+                    demoButton.classList.remove('hidden');
+                    demoButton.classList.add('visible');
+                    clickCounter.classList.remove('show');
+                    logoClickCount = 0;
+                }
+            });
+
+            // Toggle credentials
+            document.getElementById('toggleCredentials').addEventListener('click', function() {
+                const credentialFields = document.getElementById('credentialFields');
+                const isVisible = credentialFields.style.display !== 'none';
+                credentialFields.style.display = isVisible ? 'none' : 'block';
+                
+                const icon = this.querySelector('i');
+                const text = this.querySelector('span');
+                
+                if (isVisible) {
+                    icon.className = 'fas fa-key';
+                    text.textContent = 'Advanced Login';
+                } else {
+                    icon.className = 'fas fa-times';
+                    text.textContent = 'Hide Login';
+                }
+            });
+
+            // Demo access
+            document.getElementById('demoAccess').addEventListener('click', function() {
+                hideMessages();
+                storeAuthSession({
+                    username: "demo",
+                    name: "Demo User",
+                    authType: 'demo'
+                });
+                showSuccess("Demo access granted! Redirecting...");
+                setTimeout(() => {
+                    window.location.replace('/index.html'); // CORRIGIDO
+                }, 1200);
+            });
+
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                
+                if (!username || !password) {
+                    showError("Please fill in all fields");
+                    return;
+                }
+                
+                setLoadingState(true);
+                hideMessages();
+                
+                setTimeout(() => {
+                    try {
+                        const authResult = verifyCredentials(username, password);
+                        
+                        if (authResult.success) {
+                            storeAuthSession({
+                                ...authResult.user,
+                                authType: 'local'
+                            });
+                            showSuccess("Authentication successful! Redirecting...");
+                            
+                            setTimeout(() => {
+                                window.location.replace('/index.html'); // CORRIGIDO
+                            }, 1200);
+                        } else {
+                            showError(authResult.error);
+                        }
+                    } catch (error) {
+                        console.error("Authentication error:", error);
+                        showError("Authentication failed. Please try again.");
+                    } finally {
+                        setLoadingState(false);
+                    }
+                }, 800);
+            });
+        });
+
+        // Disponibilizar funções globalmente
+        window.storeAuthSession = storeAuthSession;
+        window.showSuccess = showSuccess;
+        window.showError = showError;
+    </script>
+
+    <!-- MSAL para Entra ID -->
+    <script src="https://alcdn.msauth.net/browser/2.30.0/js/msal-browser.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const msalConfig = {
+                auth: {
+                    clientId: "6c1699b0-0817-4fe1-947e-1a631e760432",
+                    authority: "https://login.microsoftonline.com/f25493ae-1c98-41d7-8a33-0be75f5fe603",
+                    redirectUri: window.location.href, // Use URL atual
+                    navigateToLoginRequestUrl: false
+                },
+                cache: {
+                    cacheLocation: "sessionStorage",
+                    storeAuthStateInCookie: false
+                },
+                system: {
+                    allowNativeBroker: false
+                }
+            };
+
+            if (typeof msal !== 'undefined') {
+                window.msalInstance = new msal.PublicClientApplication(msalConfig);
+                
+                // Initialize MSAL
+                window.msalInstance.initialize().then(() => {
+                    console.log("MSAL initialized");
+                    
+                    // Handle redirect promise
+                    return window.msalInstance.handleRedirectPromise();
+                }).then((response) => {
+                    if (response && response.account) {
+                        console.log("MSAL redirect success:", response);
+                        
+                        // Store Entra ID session
+                        const sessionData = {
+                            username: response.account.username || response.account.localAccountId || "Entra ID User",
+                            name: response.account.name || response.account.username || "Entra ID User",
+                            loginTime: new Date().toISOString(),
+                            isAuthenticated: true,
+                            expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                            authType: 'entra'
+                        };
+                        
+                        try {
+                            localStorage.setItem('volvo_oneview_session', JSON.stringify(sessionData));
+                            console.log("Entra ID session stored successfully");
+                            
+                            window.showSuccess("Authenticated with Entra ID! Redirecting...");
+                            
+                            setTimeout(() => {
+                                window.location.replace('/index.html'); // CORRIGIDO
+                            }, 1200);
+                            
+                        } catch (error) {
+                            console.error("Error storing Entra ID session:", error);
+                            window.showError("Authentication successful but failed to store session");
+                        }
+                    }
+                }).catch((error) => {
+                    console.error("MSAL error:", error);
+                    if (error.errorCode !== "user_cancelled") {
+                        window.showError("Authentication failed: " + (error.errorMessage || error.message || "Unknown error"));
+                    }
+                });
+                
+                // Entra ID Sign in function
+                window.entraIdSignIn = async function() {
+                    try {
+                        window.showSuccess("Redirecting to Microsoft login...");
+                        
+                        const loginRequest = {
+                            scopes: ["api://vg-weu-CEP-centralApi-front-prod/Resource.ReadWrite.All"],
+                            prompt: "select_account"
+                        };
+                        
+                        const loginResponse = await window.msalInstance.loginPopup(loginRequest);
+                        
+                        if (loginResponse && loginResponse.account) {
+                            const sessionData = {
+                                username: loginResponse.account.username || loginResponse.account.localAccountId || "Entra ID User",
+                                name: loginResponse.account.name || loginResponse.account.username || "Entra ID User",
+                                loginTime: new Date().toISOString(),
+                                isAuthenticated: true,
+                                expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                                authType: 'entra'
+                            };
+                            
+                            localStorage.setItem('volvo_oneview_session', JSON.stringify(sessionData));
+                            console.log("Entra ID popup session stored");
+                            
+                            window.showSuccess("Authenticated with Entra ID! Redirecting...");
+                            setTimeout(() => {
+                                window.location.replace('/index.html'); // CORRIGIDO
+                            }, 1200);
+                        }
+                        
+                    } catch (error) {
+                        console.error("MSAL login error:", error);
+                        window.showError("Authentication failed: " + (error.message || "Unknown error"));
+                    }
+                };
+
+                // Entra ID Button event listener
+                const entraButton = document.getElementById('entraIdLogin');
+                if (entraButton) {
+                    let isEntraLoading = false;
+                    entraButton.addEventListener('click', async function (e) {
+                        e.preventDefault();
+                        if (isEntraLoading) return;
+                        
+                        isEntraLoading = true;
+                        entraButton.disabled = true;
+                        entraButton.innerHTML = '<div class="loading-spinner"></div> Connecting...';
+                        
+                        try {
+                            await window.entraIdSignIn();
+                        } catch (error) {
+                            console.error("Button click error:", error);
+                        } finally {
+                            setTimeout(() => {
+                                isEntraLoading = false;
+                                entraButton.disabled = false;
+                                entraButton.innerHTML = '<i class="fab fa-microsoft"></i><span>Continue with Entra ID</span>';
+                            }, 2000);
+                        }
+                    });
+                }
+            } else {
+                console.error("MSAL library not loaded");
+                const entraButton = document.getElementById('entraIdLogin');
+                if (entraButton) {
+                    entraButton.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

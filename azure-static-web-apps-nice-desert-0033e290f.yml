@@ -1,0 +1,27 @@
+name: Azure Static Web Apps CI/CD
+
+trigger:
+- main
+
+pr:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildNumber: '$(Build.BuildNumber)'
+
+jobs:
+- job: build_and_deploy_job
+  displayName: Build and Deploy Job
+  steps:
+  - checkout: self
+    submodules: true
+  - task: AzureStaticWebApp@0
+    inputs:
+      azure_static_web_apps_api_token: '8c0879f28878b3633950b94ffea200b6780c8cc6a52b16eeaa69217daf0b65f502-7db16496-5503-4521-8a43-078b5c60e5a300f24080033e290f'
+      app_location: "/"
+      api_location: "api"
+      output_location: "/"
+      production_branch: "main"

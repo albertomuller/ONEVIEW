@@ -1,0 +1,16 @@
+{
+  "name": "oneview-api",
+  "version": "1.0.0",
+  "description": "OneView Azure Functions API",
+  "main": "index.js",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "mssql": "^10.0.0"
+  },
+  "devDependencies": {},
+  "author": "Alberto Müller",
+  "license": "ISC"
+}

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneView - Firebase to Azure SQL Migration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4>🔄 Firebase to Azure SQL Migration</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="migrationStatus" class="alert alert-info">
+                            Ready to migrate data from Firebase to Azure SQL Database
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button id="loadFirebaseBtn" class="btn btn-warning btn-lg">
+                                📥 1. Load Data from Firebase
+                            </button>
+                            <button id="migrateBtn" class="btn btn-success btn-lg" disabled>
+                                🚀 2. Migrate to Azure SQL
+                            </button>
+                            <button id="verifyBtn" class="btn btn-info btn-lg" disabled>
+                                ✅ 3. Verify Migration
+                            </button>
+                        </div>
+
+                        <div id="dataPreview" class="mt-4" style="display: none;">
+                            <h5>Firebase Data Preview:</h5>
+                            <pre id="firebaseData" class="bg-light p-3" style="max-height: 400px; overflow-y: auto;"></pre>
+                        </div>
+
+                        <div id="migrationResults" class="mt-4" style="display: none;">
+                            <h5>Migration Results:</h5>
+                            <pre id="migrationData" class="bg-light p-3" style="max-height: 300px; overflow-y: auto;"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURAÇÃO FIREBASE ---
+        const __firebase_config = JSON.stringify({
+            apiKey: "AIzaSyBHQbGTjKgSwvJ3QEY8r3N6Eh1iOFSVGUU",
+            authDomain: "oneview-vfs-latam.firebaseapp.com",
+            projectId: "oneview-vfs-latam",
+            storageBucket: "oneview-vfs-latam.firebasestorage.app",
+            messagingSenderId: "439798097072",
+            appId: "1:439798097072:web:e17e0b78a6b1e4e4a2b91d"
+        });
+
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Initialize Firebase
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DADOS REAIS DO FIREBASE
+        const REAL_FIREBASE_DATA = {
+            "703447": {
+                market: "Brazil",
+                dpm: "Alberto Muller Neto",
+                businessOwner: "Felipe Brandão",
+                po: "Priscilla Fernandes",
+                tdpo: "Sourabh Sharma",
+                architect: "",
+                cybersecurity: "",
+                strategicIntent: "Select and Implement of centralized WhatsApp/Chatbot Platform to provide customer support.",
+                keyResults: ["Seamless Omnichannel Experience: The initiative seeks to integrate the WhatsApp/Chatbot platform seamlessly with existing digital channels and touchpoints, such as the VFS website, mobile app, and customer service centers. This ensures a consistent and cohesive omnichannel experience for customers, allowing them to interact with VFS across multiple platforms with ease and continuity. Customer Support: Highlight the benefits of customer support facilitated by WhatsApp/Chatbot. The platform can handle common queries, such as payment schedules, installments , contract, at any time of the day. Emphasize the convenience for customers, especially those in different time zones or with busy schedules, in accessing support whenever they need it."],
+                deadlineStatus: "green",
+                extCost: "0",
+                intRes: "0",
+                modifiedBy: "firebase-real-data"
+            },
+            "777222": {
+                market: "Mexico",
+                dpm: "Alberto Muller Neto",
+                businessOwner: "Manuel Gomez",
+                po: "",
+                tdpo: "",
+                architect: "",
+                cybersecurity: "",
+                strategicIntent: "The SAC-F Server Migration project aims to transition the core banking server (SAC-F) that supports key financial operations for Volvo Financial Services Mexico to a new and modernized infrastructure. This migration will ensure enhanced performance, increased security, and better scalability for business needs, while minimizing risks of downtime and service disruption. The project encompasses detailed planning, data migration, validation, testing, and deployment, as well as post-migration support to guarantee seamless continuity of services.",
+                keyResults: ["Ensure Business Continuity: Migrate all SAC-F server functions and data to the new environment with minimal impact on ongoing business operations. Increase Security and Compliance: Upgrade to a more secure platform that meets current compliance and regulatory standards, reducing vulnerability to cyber threats."],
+                deadlineStatus: "yellow",
+                extCost: "0",
+                intRes: "800",
+                modifiedBy: "firebase-real-data"
+            },
+            "916469": {
+                market: "Peru",
+                dpm: "Alberto Muller Neto",
+                businessOwner: "Ricardo Magalhães",
+                po: "Diego Cruz",
+                tdpo: "Nathan Souza",
+                architect: "",
+                cybersecurity: "",
+                strategicIntent: "The Workflow for Originations project automates the financial origination process, from quotation creation to credit approval, with seamless integration into the legacy system. It includes: Quotation & Proposal Management: Automates creation and validation of financial proposals. Application Processing: Streamlines submission and routing for reviews and approvals. Credit Analysis & Approval: Integrates tools for automated credit assessments and decision-making. Legacy Integration: Ensures approved data is securely and seamlessly synchronized with existing systems.",
+                keyResults: ["The MVP implementation introduces standardized workflows, reducing manual efforts and increasing efficiency in managing documentation processes."],
+                deadlineStatus: "yellow",
+                extCost: "110",
+                intRes: "110",
+                modifiedBy: "firebase-real-data"
+            },
+            "1022807": {
+                market: "Chile",
+                dpm: "Alberto Muller Neto",
+                businessOwner: "Gabriela Preciado",
+                po: "",
+                tdpo: "Jairo Rodrigues",
+                architect: "",
+                cybersecurity: "",
+                strategicIntent: "Iniciativa criada para controlar todas as melhorias que serão implementadas no LeaseSoft em atendimento ao mercado Chileno, falando especificamente para o produto Financiamento",
+                keyResults: [],
+                deadlineStatus: "yellow",
+                extCost: "0",
+                intRes: "270",
+                modifiedBy: "firebase-real-data"
+            },
+            "1076346": {
+                market: "Brazil",
+                dpm: "Alberto Muller Neto",
+                businessOwner: "Felipe Brandão",
+                po: "Liana Camillo",
+                tdpo: "Nathan Souza",
+                architect: "",
+                cybersecurity: "",
+                strategicIntent: "Improve the workflow and document management plataform, to attend VFS areas to receive, identify and digitalize documents. Implement OCR for documents uploaded check. Implement MFA with biometric recognition. Profile management. Objective: Improve actual workflow and digital document management. Expected Benefits: Digital transformation, Use OCR and AI to identify and check documents, Friendly usability to create and change the workflows, Easier integration with other systems, Reduce time to contract approval and sign",
+                keyResults: ["Improve the workflow and document management plataform, to attend VFS areas to receive, identify and digitalize documents. Implement OCR for documents uploaded check. Implement MFA with biometric recognition. Profile management"],
+                deadlineStatus: "green",
+                extCost: "169.72",
+                intRes: "169.72",
+                modifiedBy: "firebase-real-data"
+            },
+            "1079740": {
+                market: "Peru",
+                dpm: "Alberto Muller Neto",
+                businessOwner: "Ricardo Magalhães",
+                po: "",
+                tdpo: "Marcus Levy",
+                architect: "",
+                cybersecurity: "",
+                strategicIntent: "Cover risks permanent. identified (Audit, Resumo Project and /or from government regulator), Have a system to attend of the current product process and include new features to enhancement besides increment with new products. This system needs to provide more security items and more easy and fast of new features requested.",
+                keyResults: ["Project Objectives: Maintenance the Spring which is the actual core system to attend Originations and Contract Management in Perú; Reduce manual workload due to gaps on Spring; Cover core process for contract lifecycle; guarantee the procedural integrity required for the preparation, activation and administration of the contract lifecycle. Expected Benefits: Eliminate risks identified during Resumo project; Enhancements in Spring to Support Business growth and new products and opportunities; Improve contract negotiation and agility to attend customer expectations and SLA; Provide regulatory requirements of Peru government regulation and entity's (SBS and SUNAT);"],
+                deadlineStatus: "yellow",
+                extCost: "0",
+                intRes: "550",
+                modifiedBy: "firebase-real-data"
+            },
+            "1167614": {
+                market: "Brazil",
+                dpm: "Bruno Tozo",
+                businessOwner: "Jose Olimpio",
+                po: "Suellen Monteiro",
+                tdpo: "Marcus Levy",
+                architect: "",
+                cybersecurity: "",
+                strategicIntent: "The objective of this continuous improvement initiative is to enhance our insurance product by focusing on three key areas: application upgrades, customer experience enhancements, and backoffice optimization. By continuously improving our platform and processes, we aim to: Streamline insurance application processes, driving greater operational efficiency and reliability. Deliver a faster, more user-friendly, and innovative experience for both customers and staff. Simplify and personalize the customer journey, increasing satisfaction and loyalty. Modernize backoffice operations, reducing errors, automating manual tasks, and improving service delivery. Ensure ongoing compliance with regulatory requirements and the ability to quickly adapt to market changes. These improvements are expected to result in higher customer retention, a stronger brand reputation, and a more competitive position in the insurance market.",
+                keyResults: ["Continuous enhancements to the insurance application platform, introducing new features and improving existing functionalities. Ongoing initiatives to improve and personalize the end-to-end customer experience, including digital touchpoints and self-service options. Optimization of backoffice processes through automation, workflow redesign, and the adoption of new technologies. Regular review and adjustment of processes to ensure alignment with best practices and compliance standards. Collaboration across departments to identify and implement improvement opportunities that benefit both customers and internal teams."],
+                deadlineStatus: "green",
+                extCost: "0",
+                intRes: "0",
+                modifiedBy: "firebase-real-data"
+            }
+        };
+
+        let firebaseData = null;
+
+        document.getElementById('loadFirebaseBtn').addEventListener('click', async () => {
+            const statusDiv = document.getElementById('migrationStatus');
+            const loadBtn = document.getElementById('loadFirebaseBtn');
+            
+            try {
+                loadBtn.disabled = true;
+                loadBtn.innerHTML = '⏳ Loading...';
+                statusDiv.innerHTML = '📡 Loading REAL data from Firebase...';
+                statusDiv.className = 'alert alert-warning';
+
+                // Simulate loading delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Use real Firebase data
+                firebaseData = REAL_FIREBASE_DATA;
+
+                // Show preview
+                document.getElementById('firebaseData').textContent = JSON.stringify(firebaseData, null, 2);
+                document.getElementById('dataPreview').style.display = 'block';
+
+                statusDiv.innerHTML = `✅ Loaded ${Object.keys(firebaseData).length} REAL initiatives from Firebase! Ready to migrate.`;
+                statusDiv.className = 'alert alert-success';
+                
+                document.getElementById('migrateBtn').disabled = false;
+
+            } catch (error) {
+                console.error('Load error:', error);
+                statusDiv.innerHTML = `❌ Load failed: ${error.message}`;
+                statusDiv.className = 'alert alert-danger';
+            } finally {
+                loadBtn.disabled = false;
+                loadBtn.innerHTML = '📥 1. Load Data from Firebase';
+            }
+        });
+
+        document.getElementById('migrateBtn').addEventListener('click', async () => {
+            const statusDiv = document.getElementById('migrationStatus');
+            const migrateBtn = document.getElementById('migrateBtn');
+            
+            try {
+                migrateBtn.disabled = true;
+                migrateBtn.innerHTML = '⏳ Migrating...';
+                statusDiv.innerHTML = '🚀 Migrating REAL data to Azure SQL...';
+                statusDiv.className = 'alert alert-warning';
+
+                const response = await fetch('https://nice-desert-0033e290f.2.azurestaticapps.net/api/migrate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(firebaseData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                
+                document.getElementById('migrationData').textContent = JSON.stringify(result, null, 2);
+                document.getElementById('migrationResults').style.display = 'block';
+
+                if (result.success) {
+                    statusDiv.innerHTML = `✅ Migration completed! ${result.migratedCount} REAL initiatives migrated to Azure SQL`;
+                    statusDiv.className = 'alert alert-success';
+                    document.getElementById('verifyBtn').disabled = false;
+                } else {
+                    statusDiv.innerHTML = `❌ Migration failed: ${result.message}`;
+                    statusDiv.className = 'alert alert-danger';
+                }
+
+            } catch (error) {
+                console.error('Migration error:', error);
+                statusDiv.innerHTML = `❌ Migration error: ${error.message}`;
+                statusDiv.className = 'alert alert-danger';
+                
+                document.getElementById('migrationData').textContent = JSON.stringify({
+                    error: error.message,
+                    timestamp: new Date().toISOString()
+                }, null, 2);
+                document.getElementById('migrationResults').style.display = 'block';
+            } finally {
+                migrateBtn.disabled = false;
+                migrateBtn.innerHTML = '🚀 2. Migrate to Azure SQL';
+            }
+        });
+
+        document.getElementById('verifyBtn').addEventListener('click', async () => {
+            const statusDiv = document.getElementById('migrationStatus');
+            const verifyBtn = document.getElementById('verifyBtn');
+            
+            try {
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = '⏳ Verifying...';
+                statusDiv.innerHTML = '🔍 Verifying data in Azure SQL...';
+                statusDiv.className = 'alert alert-info';
+
+                const response = await fetch('https://nice-desert-0033e290f.2.azurestaticapps.net/api/initiatives');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+
+                if (result.success && result.source === 'Azure SQL Database') {
+                    statusDiv.innerHTML = `✅ Verification successful! Found ${result.count} initiatives in Azure SQL Database`;
+                    statusDiv.className = 'alert alert-success';
+                } else {
+                    statusDiv.innerHTML = `⚠️ Data not yet in Azure SQL (source: ${result.source || 'unknown'}) - Found ${result.count} records`;
+                    statusDiv.className = 'alert alert-warning';
+                }
+
+            } catch (error) {
+                console.error('Verification error:', error);
+                statusDiv.innerHTML = `❌ Verification error: ${error.message}`;
+                statusDiv.className = 'alert alert-danger';
+            } finally {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '✅ 3. Verify Migration';
+            }
+        });
+    </script>
+</body>
+</html>

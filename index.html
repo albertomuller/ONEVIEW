@@ -1,0 +1,2669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volvo OneView</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF Export Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            /* Nova paleta minimalista baseada na imagem */
+            --primary-dark: #2D606F;    /* Flow - dark teal */
+            --primary: #396976;         /* Flow One - medium teal */
+            --primary-light: #678C96;   /* Flow Two - light teal */
+            --primary-lighter: #96B0B6; /* Flow Three - lighter teal */
+            --secondary: #C3D2D6;       /* Flow Four - very light teal */
+
+            --background: #FAFBFB;      /* Clean white background */
+            --surface: #FFFFFF;         /* Pure white for cards */
+            --surface-alt: #F7F9F9;     /* Subtle gray for sections */
+            --border: #E8EDEF;          /* Soft border color */
+            --text-primary: #1A2B2F;    /* Dark text */
+            --text-secondary: #4A5E65;  /* Medium text */
+            --text-muted: #7A8B91;      /* Light text */
+
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        /* Componentes minimalistas */
+        .btn { 
+            padding: 0.75rem 1.5rem; 
+            border-radius: 6px; 
+            font-weight: 500; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            text-decoration: none;
+            letter-spacing: -0.01em;
+        }
+
+        .btn:disabled { 
+            background-color: var(--secondary); 
+            cursor: not-allowed; 
+            opacity: 0.6;
+        }
+
+        .btn-primary { 
+            background-color: var(--primary); 
+            color: white; 
+            border-color: var(--primary);
+        }
+
+        .btn-primary:not(:disabled):hover { 
+            background-color: var(--primary-dark); 
+            border-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--surface);
+            color: var(--text-secondary);
+            border-color: var(--border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--surface-alt);
+            border-color: var(--primary-light);
+        }
+
+        .btn-success { 
+            background-color: var(--success); 
+            color: white; 
+            border-color: var(--success);
+        }
+
+        .btn-success:not(:disabled):hover { 
+            background-color: #059669; 
+            border-color: #059669;
+        }
+
+        .input-field, .textarea-field, .select-field { 
+            width: 100%; 
+            border-radius: 6px; 
+            border: 1px solid var(--border); 
+            padding: 0.75rem;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            background-color: var(--surface);
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        .input-field:focus, .textarea-field:focus, .select-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(57, 105, 118, 0.1);
+        }
+
+        /* Header minimalista */
+        .volvo-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        .volvo-logo {
+            transition: transform 0.2s ease;
+        }
+
+        .volvo-logo:hover {
+            transform: scale(1.02);
+        }
+
+        .volvo-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .volvo-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Filtros minimalistas */
+        .filter-section {
+            background: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .filter-header {
+            background: var(--surface-alt);
+            border-bottom: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .filter-group {
+            position: relative;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .executive-select {
+            width: 100%;
+            height: 40px;
+            padding: 0 12px;
+            padding-right: 32px;
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A8B91' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 14px;
+            appearance: none;
+        }
+
+        .executive-select:hover {
+            border-color: var(--primary-light);
+        }
+
+        .executive-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(57, 105, 118, 0.1);
+        }
+
+        .executive-clear-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            background-color: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .executive-clear-btn:hover {
+            color: var(--text-secondary);
+            background-color: var(--secondary);
+            border-color: var(--primary-light);
+        }
+
+        /* Tabs minimalistas */
+        .tab-elegant {
+            cursor: pointer;
+            padding: 0.75rem 1.25rem;
+            margin: 0 0.25rem;
+            border-radius: 6px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: all 0.15s ease;
+            position: relative;
+            border-bottom: 2px solid transparent;
+            font-size: 0.875rem;
+        }
+
+        .tab-elegant:hover {
+            color: var(--primary);
+            background-color: var(--surface-alt);
+        }
+
+        .tab-elegant.active {
+            color: var(--primary-dark);
+            background-color: var(--surface-alt);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Cards minimalistas */
+        .one-pager-card { 
+            background-color: var(--surface); 
+            border-radius: 8px; 
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem; 
+            overflow: hidden;
+            transition: all 0.15s ease;
+        }
+
+        .one-pager-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .config-card {
+            background-color: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: all 0.15s ease;
+        }
+
+        .market-group h2 { 
+            font-size: 1.5rem; 
+            font-weight: 600; 
+            color: var(--primary-dark); 
+            margin-bottom: 1.25rem; 
+            padding-bottom: 0.5rem; 
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .market-group h2::before {
+            content: '';
+            width: 3px;
+            height: 1.5rem;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* OR25 Milestones - design limpo */
+        .or25-milestones {
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .or25-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .milestone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .milestone-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.75rem;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+
+        .milestone-card:hover {
+            border-color: var(--primary-light);
+        }
+
+        .milestone-date {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .milestone-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .milestone-status {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        /* Gantt minimalista */
+        .gantt-grid { 
+            position: relative; 
+            overflow: visible;
+            min-height: 100px;
+        }
+
+        .gantt-bar { 
+            position: absolute; 
+            height: 1.75rem; 
+            border-radius: 4px; 
+            display: flex; 
+            align-items: center; 
+            font-size: 0.7rem; 
+            color: white; 
+            overflow: hidden; 
+            transition: all 0.15s ease; 
+            cursor: pointer;
+            min-width: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .gantt-bar:hover { 
+            z-index: 1000 !important; 
+            transform: translateY(-1px); 
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .status-light {
+            width: 0.6rem;
+            height: 0.6rem;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-light-green { background-color: var(--success); }
+        .status-light-yellow { background-color: var(--warning); }
+        .status-light-red { background-color: var(--error); }
+
+        #toast { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background-color: var(--primary-dark); 
+            color: white; 
+            padding: 12px 20px; 
+            border-radius: 6px; 
+            z-index: 1000; 
+            transition: all 0.2s ease; 
+            opacity: 0; 
+            pointer-events: none; 
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        #toast.show { 
+            opacity: 1; 
+            transform: translate(-50%, -8px); 
+        }
+
+        .initiative-preview-item { 
+            cursor: pointer; 
+            transition: all 0.15s ease; 
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            padding: 0.75rem;
+        }
+
+        .initiative-preview-item:hover {
+            background-color: var(--surface-alt);
+        }
+
+        .initiative-preview-item.selected { 
+            background-color: var(--primary); 
+            color: white; 
+        }
+
+        .initiative-preview-item.selected .text-gray-500 { 
+            color: rgba(255,255,255,0.8); 
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .volvo-title {
+                font-size: 1.25rem;
+            }
+
+            .milestone-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+
+            .gantt-bar {
+                height: 1.5rem;
+                font-size: 0.65rem;
+            }
+        }
+
+        /* Animações suaves */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .config-card, .one-pager-card, .filter-section {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <header class="volvo-header sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between py-3">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Volvo-Iron-Mark-Black.svg" 
+                             class="volvo-logo h-8 w-8" alt="Volvo Logo">
+                    </div>
+                    <div>
+                        <h1 class="volvo-title">Volvo OneView</h1>
+                        <p class="volvo-subtitle">Strategic Portfolio Management</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200">
+                        <div class="w-5 h-5 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white text-xs"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700" id="currentUser">User</span>
+                    </div>
+                    <button id="logoutBtn" class="btn btn-secondary text-sm">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+            <nav class="flex border-t border-gray-200 pt-1">
+                <button id="tab-config" class="tab-elegant active">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-cogs"></i>
+                        <span>Configuration</span>
+                    </div>
+                </button>
+                <button id="tab-onepagers" class="tab-elegant">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Portfolio</span>
+                    </div>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div id="config-tab-content" class="tab-content active">
+            <div class="space-y-6">
+                <!-- Etapa 1: Carregar Dados -->
+                <div id="config-step-1" class="config-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">Data Synchronization</h2>
+                        <button id="settings-btn" class="text-gray-400 hover:text-teal-600 hidden">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 mb-6 text-sm">Click the button below to load data from Azure DevOps.</p>
+                    <button id="load-data-btn" class="btn btn-primary">
+                        <i class="fas fa-sync-alt mr-2"></i>Load Data
+                    </button>
+                    <div id="connection-details" class="hidden mt-4 text-xs text-gray-500 bg-gray-50 p-4 rounded-lg">
+                        <p><strong>Organization:</strong> VolvoGroup-MASDCL</p>
+                        <p><strong>Project:</strong> VFSDITSA-1018751-COE LATAM</p>
+                        <p><strong>Query ID:</strong> c0bf17f0-970c-4577-a40d-2dbd3bddc452</p>
+                        <p><strong>OKR Query ID:</strong> ff0981c2-1a04-483b-8553-3b9b185a84b1</p>
+                        <p><strong>PAT Status:</strong> <span id="pat-status">Checking...</span></p>
+                        <button id="test-connection-btn" class="btn btn-secondary mt-2 text-xs">Test Connection</button>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: Editar Dados -->
+                <div id="config-step-2" class="config-card p-6 hidden">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-800">Edit and View</h2>
+                            <p class="text-gray-600 text-sm">Select an initiative to edit custom data.</p>
+                        </div>
+                        <button id="quick-view-portfolio-btn" class="btn btn-primary">
+                            <i class="fas fa-chart-bar mr-2"></i>View Portfolio
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1">
+                            <h3 class="text-base font-medium mb-3">Initiatives</h3>
+                            <div id="initiatives-preview-list" class="border rounded-lg max-h-96 overflow-y-auto p-2">
+                                <!-- JS will render here -->
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 space-y-6">
+                            <div id="edit-form-placeholder" class="flex items-center justify-center h-64 bg-gray-50 rounded-lg border-2 border-dashed">
+                                <p class="text-center text-gray-500 text-sm">
+                                    <i class="fas fa-arrow-left text-xl mb-2"></i><br>
+                                    Select an initiative to edit
+                                </p>
+                            </div>
+                            <div id="edit-form-section" class="hidden">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-base font-medium">Edit Data</h3>
+                                    <div class="flex items-center gap-2">
+                                        <button id="toggle-protection-btn" type="button" class="btn btn-secondary text-sm">
+                                            <i class="fas fa-lock mr-2"></i>
+                                            <span id="protection-status-text">Lock Initiative</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <form id="edit-form" class="space-y-4 bg-gray-50 p-4 rounded-lg">
+                                    <input type="hidden" id="edit-initiative-id">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block font-medium text-sm mb-1">Market</label>
+                                            <select id="edit-market" class="select-field"></select>
+                                        </div>
+                                        <div>
+                                            <label class="block font-medium text-sm mb-1">Deadline Status</label>
+                                            <select id="edit-deadline-status" class="select-field">
+                                                <option value="green">On Time</option>
+                                                <option value="yellow">At Risk</option>
+                                                <option value="red">Delayed</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block font-medium text-sm mb-1">DPM</label>
+                                            <input type="text" id="edit-dpm" class="input-field">
+                                        </div>
+                                        <div>
+                                            <label class="block font-medium text-sm mb-1">Business Owner</label>
+                                            <input type="text" id="edit-business-owner" class="input-field">
+                                        </div>
+                                        <div>
+                                            <label class="block font-medium text-sm mb-1">Product Owner</label>
+                                            <input type="text" id="edit-po" class="input-field">
+                                        </div>
+                                        <div>
+                                            <label class="block font-medium text-sm mb-1">Technical DPO</label>
+                                            <input type="text" id="edit-tdpo" class="input-field">
+                                        </div>
+                                        <div>
+                                            <label class="block font-medium text-sm mb-1">Architect</label>
+                                            <input type="text" id="edit-architect" class="input-field">
+                                        </div>
+                                        <div>
+                                            <label class="block font-medium text-sm mb-1">Cybersecurity</label>
+                                            <input type="text" id="edit-cybersecurity" class="input-field">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block font-medium text-sm mb-1">Strategic Intent</label>
+                                        <textarea id="edit-strategic-intent" class="textarea-field" rows="3"></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block font-medium text-sm mb-1">Key Results</label>
+                                        <textarea id="edit-key-results" class="textarea-field" rows="3"></textarea>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block font-medium text-sm mb-1">Actual</label>
+                                            <input type="number" id="edit-ext-cost" class="input-field">
+                                        </div>
+                                        <div>
+                                            <label class="block font-medium text-sm mb-1">FCST 25</label>
+                                            <input type="number" id="edit-int-res" class="input-field">
+                                        </div>
+                                    </div>
+                                    <button id="save-edits-btn" type="button" class="btn btn-success w-full">
+                                        Save Changes
+                                    </button>
+                                </form>
+                            </div>
+                            <div id="hierarchy-preview-section" class="hidden">
+                                <h3 class="text-base font-medium mb-3">Hierarchy</h3>
+                                <div id="hierarchy-tree-list" class="border rounded-lg max-h-64 overflow-y-auto p-4 bg-gray-50 text-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etapa 3: Gerar Relatório -->
+                <div id="config-step-3" class="config-card p-6 hidden">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">View Portfolio</h2>
+                    <p class="text-gray-600 mb-6 text-sm">After editing the data, view the complete portfolio.</p>
+                    <div class="flex gap-4 mb-6">
+                        <button id="view-onepagers-btn" class="btn btn-primary flex-1">
+                            <i class="fas fa-chart-bar mr-2"></i>View Portfolio
+                        </button>
+                        <button id="generate-direct-link-btn" class="btn btn-secondary flex-1">
+                            <i class="fas fa-link mr-2"></i>Generate Direct Link for Directors
+                        </button>
+                    </div>
+                    <div id="direct-link-section" class="hidden mt-4 p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-link text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 text-base">Direct Portfolio Link</h4>
+                                <p class="text-sm text-gray-600">Generate filtered portfolio access for directors</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="filter-label">Business Owner (Director)</label>
+                            <select id="director-select" class="executive-select">
+                                <option value="">All Directors</option>
+                            </select>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <input type="text" id="direct-link-input" class="input-field flex-1" readonly placeholder="Select a director to generate link">
+                            <button id="copy-link-btn" class="btn btn-primary" disabled>
+                                <i class="fas fa-copy mr-2"></i>
+                                Copy
+                            </button>
+                        </div>
+                        <div class="mt-3 p-3 bg-white border border-gray-200 rounded-lg">
+                            <div class="flex items-start gap-2">
+                                <i class="fas fa-info-circle text-primary mt-0.5 text-sm"></i>
+                                <p class="text-sm text-gray-600">This link displays only initiatives where the selected director is the Business Owner, bypassing the configuration tab.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="onepagers-tab-content" class="tab-content">
+            <div id="filters-section" class="filter-section mb-6">
+                <div class="filter-header px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-800">Strategic Portfolio</h2>
+                            <p class="text-sm text-gray-600">Executive Initiative Dashboard</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span class="text-sm text-gray-600">Active Data</span>
+                            </div>
+                            <button id="portfolio-load-data-btn" class="text-xs text-gray-500 hover:text-primary transition-colors duration-200 flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100">
+                                <i class="fas fa-sync-alt text-xs"></i>
+                                <span>Refresh</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 mb-6">
+                        <div class="filter-group">
+                            <label for="filter-market" class="filter-label">Market</label>
+                            <select id="filter-market" class="executive-select">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-dpo" class="filter-label">DPO</label>
+                            <select id="filter-dpo" class="executive-select">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-dpm" class="filter-label">DPM</label>
+                            <select id="filter-dpm" class="executive-select">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-bpo" class="filter-label">Business Owner</label>
+                            <select id="filter-bpo" class="executive-select">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-po" class="filter-label">Product Owner</label>
+                            <select id="filter-po" class="executive-select">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-tdpo" class="filter-label">Technical Lead</label>
+                            <select id="filter-tdpo" class="executive-select">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-architect"class="filter-label">Architect</label>
+                            <select id="filter-architect" class="executive-select">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-cybersecurity" class="filter-label">Cybersecurity</label>
+                            <select id="filter-cybersecurity" class="executive-select">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-600">
+                            <i class="fas fa-filter mr-2"></i>
+                            Advanced Filters Applied
+                        </div>
+                        <button id="clear-filters-btn" class="executive-clear-btn">
+                            <i class="fas fa-refresh mr-2"></i>Clear Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="portfolio-container" class="space-y-6">
+                <div class="config-card p-8 text-center text-gray-500">
+                    Use the "Configuration" tab to load and edit data.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast"></div>
+
+    <script>
+        // Remova ou comente toda a configuração e inicialização do Firebase para testar apenas Azure SQL
+
+        /*
+        const __firebase_config = JSON.stringify({
+            apiKey: "AIzaSyDMsY_-99HnTcTooIEAhGpriRLJA-l8evA",
+            authDomain: "onepage-vfs.firebaseapp.com",
+            projectId: "onepage-vfs",
+            storageBucket: "onepage-vfs.firebasestorage.app",
+            messagingSenderId: "357247060145",
+            appId: "1:357247060145:web:7af2c27072e1d158b03a90"
+        });
+        */
+
+        // Comente também os imports do Firebase
+        /*
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        */
+
+        // --- ESTADO E CONSTANTES ---
+        let devopsData = { items: [], relations: [] };
+        let okrData = { items: [], relations: [] };
+        let db;
+        let localInitiativeData = new Map();
+        let protectedInitiatives = new Set();
+        let authenticatedInitiatives = new Set();
+        const workItemTypeStyles = {
+            'Initiative': { icon: 'fa-rocket', color: '#2D606F' },
+            'Epic': { icon: 'fa-crown', color: '#E8B778' },        // Laranja pastel suave
+            'Feature': { icon: 'fa-trophy', color: '#B8A5E8' },    // Roxo pastel suave
+            'User Story': { icon: 'fa-book-open', color: '#678C96' },
+            'Bug': { icon: 'fa-bug', color: '#EF4444' },
+            'Task': { icon: 'fa-check-square', color: '#96B0B6' },
+            'Risk': { icon: 'fa-exclamation-triangle', color: '#F59E0B' },
+            'Default': { icon: 'fa-question-circle', color: '#4A5E65' }
+        };
+        const marketOptions = ["Brazil", "Peru", "Chile", "Mexico", "Latam"];
+        const QUERY_ID = 'c0bf17f0-970c-4577-a40d-2dbd3bddc452';
+        const OKR_QUERY_ID = 'ff0981c2-1a04-483b-8553-3b9b185a84b1';
+        
+        // Azure DevOps PAT - Configuration should be done via secure methods
+        // For production, implement a secure backend API to handle Azure DevOps calls
+        const PAT = window.AZURE_DEVOPS_PAT || prompt('Enter Azure DevOps PAT:') || '';
+
+        // --- ELEMENTOS DOM ---
+        const tabConfig = document.getElementById('tab-config');
+        const tabOnepagers = document.getElementById('tab-onepagers');
+        const configTabContent = document.getElementById('config-tab-content');
+        const onepagersTabContent = document.getElementById('onepagers-tab-content');
+        const configStep1 = document.getElementById('config-step-1');
+        const configStep2 = document.getElementById('config-step-2');
+        const configStep3 = document.getElementById('config-step-3');
+        const settingsBtn = document.getElementById('settings-btn');
+        const connectionDetails = document.getElementById('connection-details');
+        const editFormPlaceholder = document.getElementById('edit-form-placeholder');
+        const editFormSection = document.getElementById('edit-form-section');
+        const hierarchyPreviewSection = document.getElementById('hierarchy-preview-section');
+        const loadDataBtn = document.getElementById('load-data-btn');
+        const filterMarket = document.getElementById('filter-market');
+        const filterDpo = document.getElementById('filter-dpo');
+        const filterDpm = document.getElementById('filter-dpm');
+        const filterBpo = document.getElementById('filter-bpo');
+        const filterPo = document.getElementById('filter-po');
+        const filterTdpo = document.getElementById('filter-tdpo');
+        const filterArchitect = document.getElementById('filter-architect');
+        const filterCybersecurity = document.getElementById('filter-cybersecurity');
+        const editMarketSelect = document.getElementById('edit-market');
+
+        // --- CONFIGURAÇÃO INICIAL ---
+        function setupStaticSelects() {
+            const markets = getUniqueMarketsFromInitiativeData();
+            editMarketSelect.innerHTML = '<option value="">Select Market</option>';
+            markets.forEach(market => {
+                editMarketSelect.innerHTML += `<option value="${market}">${market}</option>`;
+            });
+
+            filterMarket.innerHTML = '<option value="">All</option>';
+            markets.forEach(market => {
+                filterMarket.innerHTML += `<option value="${market}">${market}</option>`;
+            });
+        }
+
+        // --- LÓGICA DE ABAS ---
+        function switchTab(activeTab) {
+            tabConfig.classList.toggle('active', activeTab === 'config');
+            tabOnepagers.classList.toggle('active', activeTab === 'onepagers');
+            configTabContent.classList.toggle('active', activeTab === 'config');
+            onepagersTabContent.classList.toggle('active', activeTab === 'onepagers');
+        }
+
+        tabConfig.addEventListener('click', () => switchTab('config'));
+        tabOnepagers.addEventListener('click', () => switchTab('onepagers'));
+
+        // --- VALIDAÇÃO DE CONFIGURAÇÃO ---
+        function validateConfiguration() {
+            const issues = [];
+
+            if (!PAT || PAT.length < 50) {
+                issues.push("PAT muito curto ou não definido");
+            }
+
+            if (!QUERY_ID || QUERY_ID.length !== 36) {
+                issues.push("Query ID deve ter 36 caracteres");
+            }
+
+            if (!OKR_QUERY_ID || OKR_QUERY_ID.length !== 36) {
+                issues.push("OKR Query ID deve ter 36 caracteres");
+            }
+
+            return issues;
+        }
+
+        // --- CONFIGURATION LOGIC ---
+        loadDataBtn.addEventListener('click', async () => {
+            // Validar configuração primeiro
+            const configIssues = validateConfiguration();
+            if (configIssues.length > 0) {
+                showToast("Problemas de configuração: " + configIssues.join(", "), true);
+                console.error("Problemas de configuração:", configIssues);
+                return;
+            }
+
+            loadDataBtn.disabled = true;
+            loadDataBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+
+            const previewList = document.getElementById('initiatives-preview-list');
+            previewList.innerHTML = `<div class="p-4 text-center text-gray-500">Loading initiatives...</div>`;
+
+            configStep2.classList.remove('hidden');
+            configStep3.classList.remove('hidden');
+            settingsBtn.classList.remove('hidden');
+
+            editFormPlaceholder.classList.remove('hidden');
+            editFormSection.classList.add('hidden');
+            hierarchyPreviewSection.classList.add('hidden');
+
+            try {
+                await loadAllInitiativeData(); // Carrega dados customizados do Azure SQL
+                setupStaticSelects();
+                const data = await fetchDevOpsData(QUERY_ID, true); // Carrega dados do DevOps
+                devopsData.items = data.items;
+                devopsData.relations = data.relations;
+
+                // Also fetch OKR data
+                try {
+                    const okrDataResult = await fetchDevOpsData(OKR_QUERY_ID, true);
+                    okrData.items = okrDataResult.items;
+                    okrData.relations = okrDataResult.relations;
+                    console.log("OKR data loaded successfully:", okrData.items.length, "items");
+                    console.log("OKR items types:", okrData.items.map(item => item.fields['System.WorkItemType']).filter((v, i, a) => a.indexOf(v) === i));
+                } catch (okrError) {
+                    console.warn("Failed to load OKR data:", okrError);
+                    // Add some fallback OKR data for testing
+                    okrData = { 
+                        items: [
+                            {
+                                id: 9001,
+                                fields: {
+                                    'System.WorkItemType': 'Objective',
+                                    'System.Title': 'Improve Digital Product Management Efficiency',
+                                    'System.State': 'Active',
+                                    'System.Description': 'Enhance our digital product management capabilities to deliver better results'
+                                },
+                                relations: []
+                            },
+                            {
+                                id: 9002,
+                                fields: {
+                                    'System.WorkItemType': 'Key Result',
+                                    'System.Title': 'Reduce time-to-market by 30%',
+                                    'System.State': 'Active',
+                                    'System.Description': 'Streamline processes to deliver products faster'
+                                },
+                                relations: []
+                            }
+                        ], 
+                        relations: [] 
+                    };
+                    console.log("Using fallback OKR data");
+                }
+
+                const initiatives = devopsData.items.filter(item => item.fields['System.WorkItemType'] === 'Initiative');
+                renderInitiativesPreview(initiatives);
+                renderHierarchyTree(initiatives, new Map(devopsData.items.map(item => [item.id, item])), devopsData.relations);
+                populateFilterDropdowns();
+            } catch (error) {
+                console.error(error);
+                document.getElementById('initiatives-preview-list').innerHTML = 
+                    `<div class="p-4 text-center text-red-500"><strong>Failed to load.</strong><br>${error.message}</div>`;
+            } finally {
+                loadDataBtn.disabled = false;
+                loadDataBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Load Data';
+            }
+        });
+
+        settingsBtn.addEventListener('click', () => {
+            connectionDetails.classList.toggle('hidden');
+
+            // Update PAT status when showing details
+            const patStatus = document.getElementById('pat-status');
+            if (PAT && PAT.length >= 50) {
+                patStatus.textContent = "Configured ✓";
+                patStatus.className = "text-green-600";
+            } else {
+                patStatus.textContent = "Invalid or missing ✗";
+                patStatus.className = "text-red-600";
+            }
+        });
+
+        // Test connection button
+        document.addEventListener('click', async (e) => {
+            if (e.target.id === 'test-connection-btn') {
+                e.target.disabled = true;
+                e.target.textContent = 'Testing...';
+
+                try {
+                    // Test basic DevOps API connection
+                    const organization = "VolvoGroup-MASDCL";
+                    const project = "VFSDITSA-1018751-COE LATAM";
+                    const headers = { 'Authorization': 'Basic ' + btoa(":" + PAT), 'Content-Type': 'application/json' };
+
+                    // Test with a simple projects API call
+                    const testUrl = `https://dev.azure.com/${organization}/_apis/projects/${encodeURIComponent(project)}?api-version=7.1-preview.4`;
+                    const response = await fetch(testUrl, { method: 'GET', headers: headers });
+
+                    if (response.ok) {
+                        showToast("Conexão bem-sucedida!", false);
+                        console.log("Connection test successful");
+                    } else {
+                        throw new Error(`Status: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error("Connection test failed:", error);
+                    showToast("Falha na conexão: " + error.message, true);
+                } finally {
+                    e.target.disabled = false;
+                    e.target.textContent = 'Test Connection';
+                }
+            }
+        });
+
+        document.getElementById('save-edits-btn').addEventListener('click', async () => {
+            const initiativeId = document.getElementById('edit-initiative-id').value;
+            if (!initiativeId) {
+                showToast("No initiative selected.", true);
+                return;
+            }
+
+            const editedData = {
+                market: document.getElementById('edit-market').value,
+                dpm: document.getElementById('edit-dpm').value,
+                strategicIntent: document.getElementById('edit-strategic-intent').value,
+                keyResults: document.getElementById('edit-key-results').value.split('\n').filter(Boolean),
+                businessOwner: document.getElementById('edit-business-owner').value,
+                po: document.getElementById('edit-po').value,
+                tdpo: document.getElementById('edit-tdpo').value,
+                architect: document.getElementById('edit-architect').value,
+                cybersecurity: document.getElementById('edit-cybersecurity').value,
+                deadlineStatus: document.getElementById('edit-deadline-status').value,
+                extCost: document.getElementById('edit-ext-cost').value,
+                intRes: document.getElementById('edit-int-res').value,
+            };
+
+            localInitiativeData.set(initiativeId, editedData);
+            await saveAllInitiativeData();
+            setupStaticSelects();
+            populateFilterDropdowns();
+            showToast("Changes saved successfully!");
+        });
+
+        document.getElementById('toggle-protection-btn').addEventListener('click', async () => {
+            const initiativeId = document.getElementById('edit-initiative-id').value;
+            if (!initiativeId) {
+                showToast("No initiative selected.", true);
+                return;
+            }
+
+            const isProtected = isInitiativeProtected(initiativeId);
+
+            if (isProtected) {
+                // Unlock initiative
+                showPasswordDialog("Unlock Initiative", (authenticated) => {
+                    if (authenticated) {
+                        removeInitiativeProtection(initiativeId);
+                        updateProtectionButton(initiativeId);
+                        showToast("Initiative unlocked successfully!");
+
+                        // Re-render preview to update lock icons
+                        const initiatives = devopsData.items.filter(item => item.fields['System.WorkItemType'] === 'Initiative');
+                        renderInitiativesPreview(initiatives);
+                    }
+                });
+            } else {
+                // Lock initiative
+                showPasswordDialog("Lock Initiative", (authenticated) => {
+                    if (authenticated) {
+                        addInitiativeProtection(initiativeId);
+                        updateProtectionButton(initiativeId);
+                        showToast("Initiative locked successfully!");
+
+                        // Re-render preview to update lock icons
+                        const initiatives = devopsData.items.filter(item => item.fields['System.WorkItemType'] === 'Initiative');
+                        renderInitiativesPreview(initiatives);
+                    }
+                });
+            }
+        });
+
+        document.getElementById('view-onepagers-btn').addEventListener('click', async () => {
+            // Recarregar dados do Firebase antes de mostrar o portfólio
+            showToast("Sincronizando dados...");
+            await loadAllInitiativeData();
+            setupStaticSelects();
+            populateFilterDropdowns();
+            applyFiltersAndRender();
+            switchTab('onepagers');
+        });
+
+        // Add event listener for quick view portfolio button
+        document.getElementById('quick-view-portfolio-btn').addEventListener('click', async () => {
+            showToast("Sincronizando dados...");
+            await loadAllInitiativeData();
+            setupStaticSelects();
+            populateFilterDropdowns();
+            applyFiltersAndRender();
+            switchTab('onepagers');
+        });
+
+        // Add event listener for portfolio load data button
+        document.getElementById('portfolio-load-data-btn').addEventListener('click', async () => {
+            const portfolioLoadBtn = document.getElementById('portfolio-load-data-btn');
+            portfolioLoadBtn.disabled = true;
+            portfolioLoadBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+
+            try {
+                await loadAllInitiativeData();
+                setupStaticSelects();
+                const data = await fetchDevOpsData(QUERY_ID, true);
+                devopsData.items = data.items;
+                devopsData.relations = data.relations;
+
+                // Also fetch OKR data
+                try {
+                    const okrDataResult = await fetchDevOpsData(OKR_QUERY_ID, true);
+                    okrData.items = okrDataResult.items;
+                    okrData.relations = okrDataResult.relations;
+                    console.log("OKR data refreshed successfully:", okrData.items.length, "items");
+                } catch (okrError) {
+                    console.warn("Failed to refresh OKR data:", okrError);
+                }
+
+                populateFilterDropdowns();
+                applyFiltersAndRender();
+                showToast("Data loaded successfully!");
+            } catch (error) {
+                console.error(error);
+                showToast("Failed to load data: " + error.message, true);
+            } finally {
+                portfolioLoadBtn.disabled = false;
+                portfolioLoadBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Load Data';
+            }
+        });
+
+        // --- LÓGICA DE FILTRAGEM ---
+        [filterMarket, filterDpo, filterDpm, filterBpo, filterPo, filterTdpo, filterArchitect, filterCybersecurity].forEach(el => {
+            el.addEventListener('change', applyFiltersAndRender);
+        });
+
+        document.getElementById('clear-filters-btn').addEventListener('click', () => {
+            filterMarket.value = '';
+            filterDpo.value = '';
+            filterDpm.value = '';
+            filterBpo.value = '';
+            filterPo.value = '';
+            filterTdpo.value = '';
+            filterArchitect.value = '';
+            filterCybersecurity.value = '';
+            applyFiltersAndRender();
+        });
+
+        function applyFiltersAndRender() {
+            const market = filterMarket.value;
+            const dpo = filterDpo.value;
+            const dpm = filterDpm.value;
+            const bpo = filterBpo.value;
+            const po = filterPo.value;
+            const tdpo = filterTdpo.value;
+            const architect = filterArchitect.value;
+            const cybersecurity = filterCybersecurity.value;
+
+            let initiatives = devopsData.items.filter(item => item.fields['System.WorkItemType'] === 'Initiative');
+
+            if (market) initiatives = initiatives.filter(i => (localInitiativeData.get(String(i.id)) || {}).market === market);
+            if (dpo) initiatives = initiatives.filter(i => (i.fields['System.AssignedTo']?.displayName || '') === dpo);
+            if (dpm) initiatives = initiatives.filter(i => (localInitiativeData.get(String(i.id)) || {}).dpm === dpm);
+            if (bpo) initiatives = initiatives.filter(i => (localInitiativeData.get(String(i.id)) || {}).businessOwner === bpo);
+            if (po) initiatives = initiatives.filter(i => (localInitiativeData.get(String(i.id)) || {}).po === po);
+            if (tdpo) initiatives = initiatives.filter(i => (localInitiativeData.get(String(i.id)) || {}).tdpo === tdpo);
+            if (architect) initiatives = initiatives.filter(i => (localInitiativeData.get(String(i.id)) || {}).architect === architect);
+            if (cybersecurity) initiatives = initiatives.filter(i => (localInitiativeData.get(String(i.id)) || {}).cybersecurity === cybersecurity);
+
+            renderPortfolio(initiatives);
+        }
+
+        function populateFilterDropdowns() {
+            const dpoSelect = document.getElementById('filter-dpo');
+            const dpmSelect = document.getElementById('filter-dpm');
+            const bpoSelect = document.getElementById('filter-bpo');
+            const poSelect = document.getElementById('filter-po');
+            const tdpoSelect = document.getElementById('filter-tdpo');
+
+            const dpos = new Set();
+            const dpms = new Set();
+            const bpos = new Set();
+            const pos = new Set();
+            const tdpos = new Set();
+            const architects = new Set();
+            const cybersecurities = new Set();
+
+            devopsData.items.filter(item => item.fields['System.WorkItemType'] === 'Initiative').forEach(item => {
+                const dpoName = item.fields['System.AssignedTo']?.displayName;
+                if (dpoName) dpos.add(dpoName);
+
+                const customData = localInitiativeData.get(String(item.id)) || {};
+                if (customData.dpm) dpms.add(customData.dpm);
+                if (customData.businessOwner) bpos.add(customData.businessOwner);
+                if (customData.po) pos.add(customData.po);
+                if (customData.tdpo) tdpos.add(customData.tdpo);
+                if (customData.architect) architects.add(customData.architect);
+                if (customData.cybersecurity) cybersecurities.add(customData.cybersecurity);
+            });
+
+            const populate = (select, options) => {
+                const currentVal = select.value;
+                select.innerHTML = `<option value="">All</option>`;
+                Array.from(options).sort().forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    select.appendChild(option);
+                });
+                select.value = currentVal;
+            };
+
+            populate(dpoSelect, dpos);
+            populate(dpmSelect, dpms);
+            populate(bpoSelect, bpos);
+            populate(poSelect, pos);
+            populate(tdpoSelect, tdpos);
+            populate(filterArchitect, architects);
+            populate(filterCybersecurity, cybersecurities);
+        }
+
+        // --- BUSCAR DADOS DO AZURE DEVOPS ---
+        async function fetchDevOpsData(queryId, expandRelations = false) {
+            const organization = "VolvoGroup-MASDCL";
+            const project = "VFSDITSA-1018751-COE LATAM";
+            const headers = { 'Authorization': 'Basic ' + btoa(":" + PAT), 'Content-Type': 'application/json' };
+
+            const queryUrl = `https://dev.azure.com/${organization}/${project}/_apis/wit/wiql/${queryId}?api-version=7.1-preview.2`;
+
+            console.log("Fazendo request para:", queryUrl);
+            console.log("Headers:", { ...headers, 'Authorization': 'Basic [HIDDEN]' });
+
+            const response = await fetch(queryUrl, { method: 'GET', headers: headers });
+
+            console.log("Response status:", response.status);
+            console.log("Response headers:", response.headers);
+
+            if (!response.ok) {
+                let errorMessage = `API Error [${response.status}]: `;
+                try {
+                    const errorBody = await response.text();
+                    console.log("Error response body:", errorBody);
+                    errorMessage += errorBody;
+                } catch (e) {
+                    console.log("Couldn't read error body:", e);
+                }
+
+                switch (response.status) {
+                    case 401:
+                        errorMessage = "Erro de autenticação: PAT inválido ou expirado";
+                        break;
+                    case 403:
+                        errorMessage = "Erro de permissão: Acesso negado ao projeto ou query";
+                        break;
+                    case 404:
+                        errorMessage = "Query ID não encontrado ou projeto/organização incorretos";
+                        break;
+                    default:
+                        errorMessage = `Erro ${response.status}: ${errorMessage}`;
+                }
+
+                throw new Error(errorMessage);
+            }
+
+            const result = await response.json();
+            const ids = new Set();
+            let relations = [];
+
+            if (result.queryResultType === 'workItemLink') {
+                relations = result.workItemRelations;
+                relations.forEach(link => {
+                    if (link.source) ids.add(link.source.id);
+                    if (link.target) ids.add(link.target.id);
+                });
+            } else {
+                result.workItems?.forEach(item => ids.add(item.id));
+            }
+
+            const allIds = Array.from(ids);
+            if (allIds.length === 0) return { items: [], relations: [] };
+
+            const allDetails = [];
+            const chunkSize = 200;
+            const fields = [
+                'System.Id', 'System.Title', 'System.State', 'System.WorkItemType',
+                'System.AssignedTo', 'System.Description', 'System.CreatedBy',
+                'Microsoft.VSTS.Scheduling.StartDate', 'Microsoft.VSTS.Scheduling.TargetDate',
+                'Custom.BusinessHypothesis'
+            ];
+
+            const expandParam = expandRelations ? '&$expand=relations' : '';
+            const detailsUrl = `https://dev.azure.com/${organization}/${project}/_apis/wit/workitemsbatch?${expandParam}&api-version=7.1-preview.1`;
+
+            for (let i = 0; i < allIds.length; i += chunkSize) {
+                const chunk = allIds.slice(i, i + chunkSize);
+                const body = { ids: chunk, fields: fields };
+                const detailsResponse = await fetch(detailsUrl, { method: 'POST', headers: headers, body: JSON.stringify(body) });
+
+                if (!detailsResponse.ok) {
+                    throw new Error(`Error fetching details: ${detailsResponse.status}`);
+                }
+
+                const detailsResult = await detailsResponse.json();
+                allDetails.push(...detailsResult.value);
+            }
+
+            return { items: allDetails, relations: relations };
+        }
+
+        // --- RENDERIZAÇÃO ---
+        function renderInitiativesPreview(initiatives) {
+            const listContainer = document.getElementById('initiatives-preview-list');
+            if (initiatives.length === 0) {
+                listContainer.innerHTML = `<div class="p-4 text-center text-gray-500">No initiatives found.</div>`;
+                return;
+            }
+
+            listContainer.innerHTML = initiatives.map(item => {
+                const isProtected = isInitiativeProtected(item.id);
+                const isAuthenticated = isInitiativeAuthenticated(item.id);
+                const protectionIcon = isProtected ? (isAuthenticated ? '<i class="fas fa-unlock text-green-500 text-xs"></i>' : '<i class="fas fa-lock text-orange-500 text-xs"></i>') : '';
+
+                return `
+                    <div class="initiative-preview-item border-b border-gray-200 last:border-b-0" data-id="${item.id}">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800 text-sm">${item.fields['System.Title']}</p>
+                                <p class="text-xs text-gray-500">DPO: ${item.fields['System.AssignedTo']?.displayName || 'N/A'}</p>
+                            </div>
+                            ${protectionIcon}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            listContainer.querySelectorAll('.initiative-preview-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const initiativeId = e.currentTarget.dataset.id;
+                    const initiative = devopsData.items.find(item => item.id == initiativeId);
+
+                    // Check if initiative is protected and needs authentication
+                    if (isInitiativeProtected(initiativeId) && !isInitiativeAuthenticated(initiativeId)) {
+                        showPasswordDialog(initiative.fields['System.Title'], (authenticated) => {
+                            if (authenticated) {
+                                authenticateInitiative(initiativeId);
+                                // Re-render preview to update lock icon
+                                const initiatives = devopsData.items.filter(item => item.fields['System.WorkItemType'] === 'Initiative');
+                                renderInitiativesPreview(initiatives);
+                                // Load the form after authentication
+                                loadInitiativeForm(e.currentTarget, initiativeId, initiative);
+                            }
+                        });
+                        return;
+                    }
+
+                    loadInitiativeForm(e.currentTarget, initiativeId, initiative);
+                });
+            });
+        }
+
+        function loadInitiativeForm(currentTarget, initiativeId, initiative) {
+            const listContainer = document.getElementById('initiatives-preview-list');
+            listContainer.querySelectorAll('.initiative-preview-item').forEach(el => el.classList.remove('selected'));
+            currentTarget.classList.add('selected');
+
+            const savedData = localInitiativeData.get(initiativeId) || {};
+
+            document.getElementById('edit-initiative-id').value = initiativeId;
+            document.getElementById('edit-market').value = savedData.market || '';
+            document.getElementById('edit-dpm').value = savedData.dpm || '';
+            document.getElementById('edit-business-owner').value = savedData.businessOwner || '';
+            document.getElementById('edit-po').value = savedData.po || '';
+            document.getElementById('edit-tdpo').value = savedData.tdpo || '';
+            document.getElementById('edit-architect').value = savedData.architect || '';
+            document.getElementById('edit-cybersecurity').value = savedData.cybersecurity || '';
+            document.getElementById('edit-deadline-status').value = savedData.deadlineStatus || 'green';
+            document.getElementById('edit-ext-cost').value = savedData.extCost || '';
+            document.getElementById('edit-int-res').value = savedData.intRes || '';
+
+            const strategicIntentValue = initiative.fields['System.Description'] || savedData.strategicIntent || '';
+            document.getElementById('edit-strategic-intent').value = strategicIntentValue;
+
+            const keyResultsValue = initiative.fields['Custom.BusinessHypothesis'] || 
+                (savedData.keyResults && savedData.keyResults.length > 0 ? savedData.keyResults.join('\n') : '');
+            document.getElementById('edit-key-results').value = keyResultsValue;
+
+            // Update protection button state
+            updateProtectionButton(initiativeId);
+
+            editFormPlaceholder.classList.add('hidden');
+            editFormSection.classList.remove('hidden');
+            hierarchyPreviewSection.classList.remove('hidden');
+        }
+
+        function addInitiativeProtection(initiativeId) {
+            protectedInitiatives.add(String(initiativeId));
+            saveProtectedInitiatives();
+        }
+
+        function removeInitiativeProtection(initiativeId) {
+            protectedInitiatives.delete(String(initiativeId));
+            authenticatedInitiatives.delete(String(initiativeId));
+            saveProtectedInitiatives();
+        }
+
+        function updateProtectionButton(initiativeId) {
+            const btn = document.getElementById('toggle-protection-btn');
+            const statusText = document.getElementById('protection-status-text');
+            const isProtected = isInitiativeProtected(initiativeId);
+
+            if (isProtected) {
+                btn.className = 'btn btn-secondary text-sm';
+                btn.innerHTML = '<i class="fas fa-unlock mr-2"></i><span id="protection-status-text">Unlock Initiative</span>';
+            } else {
+                btn.className = 'btn btn-secondary text-sm';
+                btn.innerHTML = '<i class="fas fa-lock mr-2"></i><span id="protection-status-text">Lock Initiative</span>';
+            }
+        }
+
+        function saveProtectedInitiatives() {
+            try {
+                const protectedList = Array.from(protectedInitiatives);
+                localStorage.setItem('volvo_protected_initiatives', JSON.stringify(protectedList));
+                console.log("Protected initiatives saved:", protectedList);
+            } catch (error) {
+                console.error("Error saving protected initiatives:", error);
+            }
+        }
+
+        function loadProtectedInitiatives() {
+            try {
+                const saved = localStorage.getItem('volvo_protected_initiatives');
+                if (saved) {
+                    const protectedList = JSON.parse(saved);
+                    protectedInitiatives.clear();
+                    protectedList.forEach(id => protectedInitiatives.add(String(id)));
+                    console.log("Protected initiatives loaded:", protectedList);
+                }
+            } catch (error) {
+                console.error("Error loading protected initiatives:", error);
+            }
+        }
+
+        function renderHierarchyTree(initiatives, allItemsMap, relations) {
+            const treeContainer = document.getElementById('hierarchy-tree-list');
+            if (initiatives.length === 0) {
+                treeContainer.innerHTML = '<p class="text-gray-500">No initiatives to display.</p>';
+                return;
+            }
+
+            const { parentToChildrenMap } = buildHierarchyMaps(allItemsMap, relations);
+
+            function buildTreeHtml(itemId, level) {
+                const item = allItemsMap.get(itemId);
+                if (!item) return '';
+
+                const style = workItemTypeStyles[item.fields['System.WorkItemType']] || workItemTypeStyles.Default;
+                let html = `<li>
+                    <div class="flex items-center" style="padding-left: ${level * 20}px;">
+                        <i class="fas ${style.icon} fa-fw mr-2" style="color: ${style.color};"></i>
+                        <span class="text-sm">${item.fields['System.Title']} (#${item.id})</span>
+                        <a href="${getDevOpsItemUrl(item.id)}" target="_blank" class="ml-2 text-blue-500 hover:underline">
+                            <i class="fas fa-external-link-alt fa-xs"></i>
+                        </a>
+                    </div>
+                </li>`;
+
+                const childrenIds = parentToChildrenMap.get(itemId) || [];
+                if (childrenIds.length > 0) {
+                    html += '<ul>';
+                    childrenIds.forEach(childId => {
+                        html += buildTreeHtml(childId, level + 1);
+                    });
+                    html += '</ul>';
+                }
+                return html;
+            }
+
+            let fullHtml = '<ul>';
+            initiatives.forEach(initiative => {
+                fullHtml += buildTreeHtml(initiative.id, 0);
+            });
+            fullHtml += '</ul>';
+
+            treeContainer.innerHTML = fullHtml;
+        }
+
+        function renderPortfolio(initiatives) {
+            const container = document.getElementById('portfolio-container');
+            container.innerHTML = '';
+
+            if (initiatives.length === 0) {
+                container.innerHTML = `<div class="config-card p-8 text-center text-gray-500">No initiatives found with applied filters.</div>`;
+                return;
+            }
+
+            const groupedByMarket = initiatives.reduce((acc, initiative) => {
+                const customData = localInitiativeData.get(String(initiative.id)) || {};
+                const market = customData.market || 'Uncategorized';
+                if (!acc[market]) acc[market] = [];
+                acc[market].push(initiative);
+                return acc;
+            }, {});
+
+            const marketOrder = marketOptions.concat(['Uncategorized']);
+            const allItemsMap = new Map(devopsData.items.map(item => [item.id, item]));
+
+            marketOrder.forEach(market => {
+                if (groupedByMarket[market] && groupedByMarket[market].length > 0) {
+                    const marketContainer = document.createElement('div');
+                    marketContainer.className = 'market-group';
+
+                    const marketTitle = document.createElement('h2');
+                    marketTitle.textContent = market;
+                    marketContainer.appendChild(marketTitle);
+
+                    groupedByMarket[market].forEach(initiative => {
+                        const customData = localInitiativeData.get(String(initiative.id)) || {};
+                        marketContainer.appendChild(createOnePagerCard(initiative, allItemsMap, customData));
+                    });
+
+                    container.appendChild(marketContainer);
+                }
+            });
+        }
+
+        function createOnePagerCard(initiative, allItemsMap, customData) {
+            const cardId = `onepager-card-${initiative.id}`;
+            const card = document.createElement('div');
+            card.className = 'one-pager-card';
+            card.id = cardId;
+
+            const { orderedItems, allDescendantIds } = getSortedHierarchy(initiative, allItemsMap, devopsData.relations);
+
+            const childToParentMap = new Map();
+            devopsData.relations.forEach(link => {
+                if (link.source && link.target && link.rel === 'System.LinkTypes.Hierarchy-Forward') {
+                    childToParentMap.set(link.target.id, link.source.id);
+                }
+            });
+
+            const associatedRisks = findAssociatedRisks(allDescendantIds, allItemsMap, childToParentMap);
+
+            // Find associated OKRs
+            const okrItemsMap = new Map(okrData.items.map(item => [item.id, item]));
+            const okrChildToParentMap = new Map();
+            okrData.relations.forEach(link => {
+                if (link.source && link.target && link.rel === 'System.LinkTypes.Hierarchy-Forward') {
+                    okrChildToParentMap.set(link.target.id, link.source.id);
+                }
+            });
+            const associatedOKRs = findAssociatedOKRs(allDescendantIds, okrItemsMap, okrChildToParentMap);
+
+            const { deadlineStatus, riskStatus } = getStatusColors(customData, associatedRisks);
+
+            const keyResultsText = initiative.fields['Custom.BusinessHypothesis'] || 
+                (customData.keyResults && customData.keyResults.length > 0 ? customData.keyResults.join('\n') : '');
+            const keyResultsHtml = keyResultsText
+                ? keyResultsText.split('\n').filter(r => r.trim()).map(r => `<li class="pl-2 text-sm">${r.trim()}</li>`).join('')
+                : '<li class="text-sm">Not informed.</li>';
+
+            const riskBadgeHtml = associatedRisks.length > 0
+                ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                       ${associatedRisks.length}
+                   </span>`
+                : '';
+
+            const okrBadgeHtml = associatedOKRs.length > 0
+                ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                       <i class="fas fa-bullseye mr-1"></i>${associatedOKRs.length}
+                   </span>`
+                : '';
+
+            const risksListHtml = associatedRisks.length > 0
+                ? associatedRisks.map(({ risk, parent }) => `
+                    <li class="flex items-start text-sm py-2 border-t first:border-t-0">
+                        <div class="flex-grow">
+                            <a href="${getDevOpsItemUrl(risk.id)}" target="_blank" 
+                               class="font-medium text-teal-600 hover:underline">${risk.fields['System.Title']}</a>
+                            <div class="text-xs text-gray-500 mt-1">
+                                Parent: <a href="${getDevOpsItemUrl(parent.id)}" target="_blank" 
+                                          class="hover:underline">${parent.fields['System.Title']}</a>
+                            </div>
+                        </div>
+                    </li>`).join('')
+                : '<li class="text-sm text-gray-500">No risks identified.</li>';
+
+            // Group OKRs by type and create summary
+            const objectivesCount = associatedOKRs.filter(({ type }) => type === 'Objective').length;
+            const keyResultsCount = associatedOKRs.filter(({ type }) => type === 'Key Result').length;
+
+            const okrsListHtml = associatedOKRs.length > 0
+                ? `
+                    <div class="mb-3 p-2 bg-blue-100 rounded-lg">
+                        <div class="text-xs font-semibold text-blue-800 mb-1">OKR Summary</div>
+                        <div class="text-xs text-blue-700">
+                            ${objectivesCount} Objective${objectivesCount !== 1 ? 's' : ''} • 
+                            ${keyResultsCount} Key Result${keyResultsCount !== 1 ? 's' : ''}
+                        </div>
+                    </div>
+                    ${associatedOKRs.map(({ okr, connectedTo, type, parentObjective }) => {
+                        const okrIcon = type === 'Objective' ? 'fa-bullseye' : 'fa-key';
+                        const okrColor = type === 'Objective' ? 'text-blue-600' : 'text-green-600';
+                        const okrTitle = okr.fields['System.Title'] || 'Untitled OKR';
+                        const okrState = okr.fields['System.State'] || 'Active';
+                        const okrDescription = okr.fields['System.Description'] || '';
+
+                        const indentClass = type === 'Key Result' && parentObjective ? 'ml-4' : '';
+
+                        return `
+                            <li class="flex items-start text-sm py-2 border-t first:border-t-0 ${indentClass}">
+                                <div class="flex-grow">
+                                    <div class="flex items-center gap-2">
+                                        ${type === 'Key Result' && parentObjective ? '<i class="fas fa-arrow-right text-gray-400 text-xs mr-1"></i>' : ''}
+                                        <i class="fas ${okrIcon} ${okrColor} text-sm"></i>
+                                        <a href="${getDevOpsItemUrl(okr.id)}" target="_blank" 
+                                           class="font-medium text-teal-600 hover:underline">${okrTitle}</a>
+                                        <span class="text-xs px-1.5 py-0.5 rounded-full ${type === 'Objective' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}">${type}</span>
+                                    </div>
+                                    ${parentObjective ? `
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            <i class="fas fa-link text-xs mr-1"></i>
+                                            Part of: ${parentObjective.fields['System.Title']}
+                                        </div>
+                                    ` : ''}
+                                    <div class="text-xs text-gray-500 mt-1">
+                                        Status: <span class="font-medium">${okrState}</span>
+                                        ${connectedTo ? ` • Connected to: <a href="${getDevOpsItemUrl(connectedTo.id)}" target="_blank" class="text-teal-600 hover:underline">${connectedTo.fields['System.WorkItemType']} "${connectedTo.fields['System.Title']}"</a>` : ''}
+                                    </div>
+                                    ${okrDescription ? `
+                                        <div class="text-xs text-gray-600 mt-1 italic">
+                                            ${okrDescription.substring(0, 120)}${okrDescription.length > 120 ? '...' : ''}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </li>`;
+                    }).join('')}
+                `
+                : '<li class="text-sm text-gray-500">No OKRs defined for this initiative.</li>';
+
+            card.innerHTML = `
+                <div class="bg-gray-50 border-b p-5">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-lg font-semibold text-gray-800">${initiative.fields['System.Title']}</h3>
+                                <a href="${getDevOpsItemUrl(initiative.id)}" target="_blank" class="text-teal-600 hover:underline">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                                ${riskBadgeHtml}
+                                ${okrBadgeHtml}
+                            </div>
+                            <div class="flex items-center gap-4 text-sm text-gray-600">
+                                <div class="flex items-center gap-2">
+                                    <span class="status-light status-light-${deadlineStatus}"></span>
+                                    <span>Deadline</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="status-light status-light-${riskStatus}"></span>
+                                    <span>Risks</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-medium px-2 py-1 rounded-full bg-gray-200 text-gray-700">
+                                    ${initiative.fields['System.State']}
+                                </span>
+                                ${isInitiativeProtected(initiative.id) ? 
+                                    (isInitiativeAuthenticated(initiative.id) ? 
+                                        '<i class="fas fa-unlock text-green-500" title="Iniciativa autenticada"></i>' : 
+                                        '<i class="fas fa-lock text-orange-500" title="Iniciativa protegida"></i>') : ''}
+                            </div>
+                            <button class="text-gray-500 hover:text-red-600 export-pdf-btn" data-card-id="${cardId}">
+                                <i class="fas fa-file-pdf"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">DPO: ${initiative.fields['System.AssignedTo']?.displayName || 'N/A'}</p>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-medium text-gray-500 text-sm mb-2">STRATEGIC INTENT</h4>
+                                <p class="text-gray-700 text-sm">${initiative.fields['System.Description'] || customData.strategicIntent || 'Not informed.'}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-500 text-sm mb-2">KEY RESULTS</h4>
+                                <ul class="list-disc list-inside text-gray-700 space-y-1">${keyResultsHtml}</ul>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-500 text-sm mb-3">RESPONSIBLE TEAM</h4>
+                                ${isInitiativeProtected(initiative.id) && !isInitiativeAuthenticated(initiative.id) ? 
+                                    `<div class="flex items-center justify-center py-6">
+                                        <div class="text-center">
+                                            <i class="fas fa-lock text-2xl text-gray-400 mb-2"></i>
+                                            <p class="text-sm text-gray-500">Dados protegidos</p>
+                                            <button class="btn btn-primary btn-sm mt-2 auth-initiative-btn" data-initiative-id="${initiative.id}">
+                                                <i class="fas fa-unlock mr-1"></i>Autenticar
+                                            </button>
+                                        </div>
+                                    </div>` :
+                                    `<div class="space-y-2 text-sm">
+                                        <p><strong>DPM:</strong> ${customData.dpm || 'Not informed'}</p>
+                                        <p><strong>Business Owner:</strong> ${customData.businessOwner || 'Not informed'}</p>
+                                        <p><strong>Product Owner:</strong> ${customData.po || 'Not informed'}</p>
+                                        <p><strong>Technical DPO:</strong> ${customData.tdpo || 'Not informed'}</p>
+                                        <p><strong>Architect:</strong> ${customData.architect || 'Not informed'}</p>
+                                        <p><strong>Cybersecurity:</strong> ${customData.cybersecurity || 'Not informed'}</p>
+                                    </div>`}
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-500 text-sm mb-3">FINANCIAL</h4>
+                                ${isInitiativeProtected(initiative.id) && !isInitiativeAuthenticated(initiative.id) ? 
+                                    `<div class="flex items-center justify-center py-4">
+                                        <div class="text-center">
+                                            <i class="fas fa-lock text-lg text-gray-400 mb-1"></i>
+                                            <p class="text-xs text-gray-500">Dados protegidos</p>
+                                        </div>
+                                    </div>` :
+                                    `<div class="text-sm space-y-2">
+                                        <p class="flex justify-between">
+                                            <span>Actual:</span> 
+                                            <span class="font-bold">${Number(customData.extCost || 0).toLocaleString('en-US')}</span>
+                                        </p>
+                                        <p class="flex justify-between">
+                                            <span>FCST 25:</span> 
+                                            <span class="font-bold">${Number(customData.intRes || 0).toLocaleString('en-US')}</span>
+                                        </p>
+                                    </div>`}
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-500 text-sm mb-3">ASSOCIATED RISKS</h4>
+                                <ul class="space-y-1">${risksListHtml}</ul>
+                            </div>
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-500 text-sm mb-3">OKRs (OBJECTIVES & KEY RESULTS)</h4>
+                                <ul class="space-y-1">${okrsListHtml}</ul>
+                            </div>
+                        </div>
+                    </div>
+                    ${isInitiativeProtected(initiative.id) && !isInitiativeAuthenticated(initiative.id) ? 
+                        `<div class="mt-6 flex items-center justify-center py-4">
+                            <div class="text-center">
+                                <i class="fas fa-lock text-lg text-gray-400 mb-1"></i>
+                                <p class="text-xs text-gray-500">Timeline protegida</p>
+                            </div>
+                        </div>` :
+                        `<div class="mt-6">
+                            ${renderGanttForInitiative(orderedItems)}
+                        </div>`}
+                </div>
+            `;
+
+            // Adicionar evento para autenticar iniciativa no portfolio
+            const authBtn = card.querySelector('.auth-initiative-btn');
+            if (authBtn) {
+                authBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const initiativeId = e.currentTarget.dataset.iniciativaId;
+                    const initiative = devopsData.items.find(item => item.id == initiativeId);
+
+                    showPasswordDialog(initiative.fields['System.Title'], (authenticated) => {
+                        if (authenticated) {
+                            authenticateInitiative(initiativeId);
+                            // Re-render portfolio to show authenticated data
+                            applyFiltersAndRender();
+                            showToast("Iniciativa autenticada com sucesso!");
+                        }
+                    });
+                });
+            }
+
+            // Adicionar evento para exportar PDF
+            card.querySelector('.export-pdf-btn').addEventListener('click', (e) => {
+                const btn = e.currentTarget;
+                const cardElementId = btn.dataset.cardId;
+                const cardToExport = document.getElementById(cardElementId);
+                const initiativeTitle = initiative.fields['System.Title'].replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+                showToast("Generating PDF...");
+
+                // Preparar elemento para PDF
+                const exportButton = cardToExport.querySelector('.export-pdf-btn');
+                if (exportButton) exportButton.style.display = 'none';
+
+                // Criar clone do card para ajustar layout para PDF
+                const clonedCard = cardToExport.cloneNode(true);
+                clonedCard.style.maxWidth = '210mm';
+                clonedCard.style.margin = '0';
+                clonedCard.style.boxShadow = 'none';
+                clonedCard.style.border = '1px solid #ddd';
+                clonedCard.style.pageBreakInside = 'avoid';
+
+                // Ajustar grid para uma coluna no PDF
+                const gridElement = clonedCard.querySelector('.grid');
+                if (gridElement) {
+                    gridElement.style.display = 'block';
+                    gridElement.style.gridTemplateColumns = 'none';
+                }
+
+                // Ajustar espaçamentos para PDF
+                const spacingElements = clonedCard.querySelectorAll('.space-y-4, .space-y-6');
+                spacingElements.forEach(el => {
+                    el.style.marginBottom = '1rem';
+                });
+
+                // Remover botão de exportar do clone
+                const clonedExportBtn = clonedCard.querySelector('.export-pdf-btn');
+                if (clonedExportBtn) clonedExportBtn.remove();
+
+                // Ajustar Gantt para PDF
+                const ganttContainer = clonedCard.querySelector('.gantt-grid');
+                if (ganttContainer) {
+                    ganttContainer.style.minWidth = '100%';
+                    ganttContainer.style.overflowX = 'visible';
+                }
+
+                // Adicionar ao DOM temporariamente
+                document.body.appendChild(clonedCard);
+                clonedCard.style.position = 'absolute';
+                clonedCard.style.left = '-9999px';
+                clonedCard.style.top = '0';
+
+                html2pdf().from(clonedCard).set({
+                    margin: [15, 15, 15, 15],
+                    filename: `onepager_${initiativeTitle}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { 
+                        scale: 2,
+                        useCORS: true,
+                        letterRendering: true,
+                        allowTaint: false,
+                        removeContainer: true,
+                        imageTimeout: 15000,
+                        logging: false
+                    },
+                    jsPDF: { 
+                        unit: 'mm', 
+                        format: 'a4', 
+                        orientation: 'portrait',
+                        compress: true
+                    },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                }).save().then(() => {
+                    document.body.removeChild(clonedCard);
+                    if (exportButton) exportButton.style.display = 'block';
+                    showToast("PDF generated successfully!");
+                }).catch((error) => {
+                    document.body.removeChild(clonedCard);
+                    if (exportButton) exportButton.style.display = 'block';
+                    console.error('PDF Generation Error:', error);
+                    showToast("Failed to generate PDF.", true);
+                });
+            });
+
+            return card;
+        }
+
+        function renderGanttForInitiative(itemsWithDates) {
+            if (!itemsWithDates || itemsWithDates.length === 0) {
+                return '<h4 class="font-medium text-gray-500 text-sm mb-2">TIMELINE</h4><p class="text-sm text-gray-500">No items with dates to display.</p>';
+            }
+
+            const validItems = itemsWithDates.filter(item => {
+                const startDate = item.fields['Microsoft.VSTS.Scheduling.StartDate'];
+                const targetDate = item.fields['Microsoft.VSTS.Scheduling.TargetDate'];
+                return startDate && targetDate && !isNaN(new Date(startDate)) && !isNaN(new Date(targetDate));
+            });
+
+            if (validItems.length === 0) {
+                return '<h4 class="font-medium text-gray-500 text-sm mb-2">TIMELINE</h4><p class="text-sm text-gray-500">No valid items to display.</p>';
+            }
+
+            // Get actual date ranges from the items
+            const validDates = validItems.flatMap(item => [
+                new Date(item.fields['Microsoft.VSTS.Scheduling.StartDate']),
+                new Date(item.fields['Microsoft.VSTS.Scheduling.TargetDate'])
+            ]);
+
+            let minDate = new Date(Math.min(...validDates));
+            let maxDate = new Date(Math.max(...validDates));
+
+            // Set minDate to start of the month for better visualization
+            minDate.setDate(1);
+            minDate.setHours(0, 0, 0, 0);
+
+            // Marcos OR25 
+            const milestones = [
+                { date: new Date('2025-02-03T12:00:00Z'), title: 'OR25A', status: 'upcoming' },
+                { date: new Date('2025-04-07T12:00:00Z'), title: 'OR25B', status: 'upcoming' },
+                { date: new Date('2025-06-16T12:00:00Z'), title: 'OR25C', status: 'upcoming' },
+                { date: new Date('2025-08-22T12:00:00Z'), title: 'OR25D', status: 'upcoming' },
+                { date: new Date('2025-11-03T12:00:00Z'), title: 'OR25E', status: 'upcoming' }
+            ];
+
+            const lastMilestoneDate = milestones.length > 0 ? new Date(Math.max(...milestones.map(m => m.date))) : chartStartDate;
+            if (maxDate < lastMilestoneDate) {
+                maxDate = lastMilestoneDate;
+            }
+
+            maxDate.setMonth(maxDate.getMonth() + 1);
+            const totalDurationDays = Math.max(30, (maxDate - minDate) / (1000 * 60 * 60 * 24));
+
+            // Gerar colunas de meses
+            let monthColumns = '';
+            let tempDate = new Date(minDate);
+            let monthCount = 0;
+            const maxMonths = 20;
+
+            while (tempDate <= maxDate && monthCount < maxMonths) {
+                const monthName = tempDate.toLocaleString('en-US', { month: 'short' });
+                const year = tempDate.getFullYear().toString().slice(-2);
+                const nextMonth = new Date(tempDate.getFullYear(), tempDate.getMonth() + 1, 1);
+                const daysInMonth = new Date(tempDate.getFullYear(), tempDate.getMonth() + 1, 0).getDate();
+                const monthWidth = (daysInMonth / totalDurationDays) * 100;
+
+                monthColumns += `<div style="width: ${monthWidth.toFixed(2)}%;" class="text-center font-medium border-r border-gray-300 p-2 text-xs bg-gray-100">${monthName} '${year}</div>`;
+                tempDate = nextMonth;
+                monthCount++;
+            }
+
+            // Organizar itens mantendo a ordem hierárquica correta
+            const itemPositions = [];
+            validItems.forEach((item, index) => {
+                itemPositions[index] = { row: index, item: item };
+            });
+
+            // Gerar barras do Gantt
+            const barsHtml = itemPositions.map((posInfo, index) => {
+                if (!posInfo) return '';
+
+                const { item, row } = posInfo;
+                const style = workItemTypeStyles[item.fields['System.WorkItemType']] || workItemTypeStyles.Default;
+                const startDate = new Date(item.fields['Microsoft.VSTS.Scheduling.StartDate']);
+                const targetDate = new Date(item.fields['Microsoft.VSTS.Scheduling.TargetDate']);
+
+                if (isNaN(startDate) || isNaN(targetDate)) return '';
+
+                // Ensure we're using the actual dates from the items
+                const adjustedStartDate = new Date(Math.max(startDate.getTime(), minDate.getTime()));
+                const adjustedTargetDate = new Date(Math.min(targetDate.getTime(), maxDate.getTime()));
+
+                const itemDurationDays = Math.max(1, (adjustedTargetDate - adjustedStartDate) / (1000 * 60 * 60 * 24));
+                const startOffsetDays = Math.max(0, (adjustedStartDate - minDate) / (1000 * 60 * 60 * 24));
+
+                const left = (startOffsetDays / totalDurationDays) * 100;
+                const width = Math.max(1, Math.min((itemDurationDays / totalDurationDays) * 100, 100 - left));
+                const topPosition = row * 2.25;
+                const indentLevel = Math.min(item.ganttLevel || 0, 5);
+
+                const title = (item.fields['System.Title'] || '').substring(0, 30);
+                const fullTitle = (item.fields['System.Title'] || '');
+                const safeTitle = title.replace(/['"]/g, '');
+                const safeFullTitle = fullTitle.replace(/['"]/g, '');
+
+                return `<div class="gantt-bar" 
+                           title="${safeFullTitle}" 
+                           style="left: ${left.toFixed(2)}%; 
+                                  width: ${width.toFixed(2)}%; 
+                                  top: ${topPosition}rem; 
+                                  background-color: ${style.color}; 
+                                  z-index: ${100 - row};"
+                           onclick="window.open('${getDevOpsItemUrl(item.id)}', '_blank')">
+                            <div style="padding-left: ${Math.max(4, indentLevel * 6)}px; padding-right: 4px;" class="flex items-center w-full h-full overflow-hidden cursor-pointer">
+                                <i class="fas ${style.icon} mr-1 text-white opacity-90" style="font-size: 0.6rem;"></i>
+                                <span class="truncate font-medium text-xs">${safeTitle}</span>
+                                <i class="fas fa-external-link-alt ml-1 text-white opacity-70" style="font-size: 0.5rem;"></i>
+                            </div>
+                        </div>`;
+            }).filter(html => html !== '').join('');
+
+            // "Today" line 
+            let todayMarkerHtml = '';
+            const today = new Date();
+            if (today >= minDate && today <= maxDate) {
+                const offsetDays = (today - minDate) / (1000 * 60 * 60 * 24);
+                const leftPosition = (offsetDays / totalDurationDays) * 100;
+                todayMarkerHtml = `
+                    <div style="position: absolute; left: ${leftPosition.toFixed(2)}%; top: 0; bottom: 0; width: 2px; background-color: #396976; z-index: 200; opacity: 0.9;">
+                    </div>
+                    <div style="position: absolute; left: ${leftPosition.toFixed(2)}%; bottom: 2px; width: 2px; height: 12px; background-color: #396976; z-index: 600;">
+                        <div style="position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; font-weight: 600; color: #396976; background: white; padding: 1px 3px; border: 1px solid #396976; border-radius: 3px; white-space: nowrap;">
+                            Today
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Marcos OR25 com linhas pontilhadas atravessando todo o Gantt
+            const milestoneMarkersHtml = milestones.map(milestone => {
+                if (milestone.date >= minDate && milestone.date <= maxDate) {
+                    const offsetDays = (milestone.date - minDate) / (1000 * 60 * 60 * 24);
+                    const leftPosition = (offsetDays / totalDurationDays) * 100;
+                    return `
+                        <div style="position: absolute; left: ${leftPosition.toFixed(2)}%; top: 0; bottom: 0; width: 2px; background: repeating-linear-gradient(to bottom, #2D606F 0px, #2D606F 4px, transparent 4px, transparent 8px); z-index: 200; opacity: 0.7;">
+                        </div>
+                        <div style="position: absolute; left: ${leftPosition.toFixed(2)}%; bottom: 2px; width: 2px; height: 12px; background-color: #2D606F; z-index: 600;">
+                            <div style="position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; font-weight: 600; color: #2D606F; background: white; padding: 1px 3px; border: 1px solid #2D606F; border-radius: 3px; white-space: nowrap;">
+                                ${milestone.title}
+                            </div>
+                        </div>
+                    `;
+                }
+                return '';
+            }).join('');
+
+            const ganttHeight = Math.max(5, validItems.length * 2.25 + 1.5);
+
+            return `
+                <h4 class="font-medium text-gray-500 text-sm mb-3">TIMELINE</h4>
+                <div class="w-full border rounded-lg bg-white overflow-hidden mb-4">
+                    <div class="overflow-x-auto">
+                        <div class="min-w-full relative" style="min-width: 800px;">
+                            <div class="flex bg-gray-50 border-b">
+                                ${monthColumns}
+                            </div>
+                            <div class="gantt-grid relative bg-white" style="height: ${ganttHeight}rem; position: relative; padding: 1rem; padding-bottom: 2rem;">
+                                ${barsHtml}
+                                ${todayMarkerHtml}
+                                ${milestoneMarkersHtml}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- AUTENTICAÇÃO DE INICIATIVAS ---
+        function verifyInitiativePassword(password) {
+            return password === "Vfsalberto2025";
+        }
+
+        function showPasswordDialog(initiativeTitle, callback) {
+            const dialogHtml = `
+                <div id="password-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-lock text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Iniciativa Protegida</h3>
+                                <p class="text-sm text-gray-600">${initiativeTitle}</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Esta iniciativa requer autenticação. Digite a senha para acessar os dados completos.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Senha de Acesso</label>
+                                <input type="password" id="initiative-password" class="input-field" placeholder="Digite a senha" autocomplete="off">
+                            </div>
+                            <div class="flex gap-3">
+                                <button id="password-cancel-btn" class="btn btn-secondary flex-1">Cancelar</button>
+                                <button id="password-confirm-btn" class="btn btn-primary flex-1">Acessar</button>
+                            </div>
+                        </div>
+                        <div id="password-error" class="hidden mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-exclamation-triangle text-red-500 text-sm"></i>
+                                <span class="text-sm text-red-700">Senha incorreta. Tente novamente.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', dialogHtml);
+
+            const overlay = document.getElementById('password-overlay');
+            const passwordInput = document.getElementById('initiative-password');
+            const confirmBtn = document.getElementById('password-confirm-btn');
+            const cancelBtn = document.getElementById('password-cancel-btn');
+            const errorDiv = document.getElementById('password-error');
+
+            function closeDialog() {
+                overlay.remove();
+            }
+
+            function handleConfirm() {
+                const password = passwordInput.value;
+                if (verifyInitiativePassword(password)) {
+                    closeDialog();
+                    callback(true);
+                } else {
+                    errorDiv.classList.remove('hidden');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            }
+
+            confirmBtn.addEventListener('click', handleConfirm);
+            cancelBtn.addEventListener('click', () => {
+                closeDialog();
+                callback(false);
+            });
+
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleConfirm();
+                }
+            });
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    closeDialog();
+                    callback(false);
+                }
+            });
+
+            // Focus on password input
+            setTimeout(() => passwordInput.focus(), 100);
+        }
+
+        function isInitiativeProtected(initiativeId) {
+            return protectedInitiatives.has(String(initiativeId));
+        }
+
+        function isInitiativeAuthenticated(initiativeId) {
+            return authenticatedInitiatives.has(String(initiativeId));
+        }
+
+        function authenticateInitiative(initiativeId) {
+            authenticatedInitiatives.add(String(initiativeId));
+        }
+
+        // --- FUNÇÕES AUXILIARES ---
+        function getStatusColors(customData, associatedRisks) {
+            const deadlineStatus = customData.deadlineStatus || 'green';
+            const openRisks = associatedRisks.filter(r => !['Closed', 'Removed', 'Accepted'].includes(r.risk.fields['System.State'])).length;
+            let riskStatus = 'green';
+            if (openRisks > 2) riskStatus = 'red';
+            else if (openRisks > 0) riskStatus = 'yellow';
+            return { deadlineStatus, riskStatus };
+        }
+
+        function findAssociatedRisks(hierarchyItemIds, allItemsMap, childToParentMap) {
+            const risks = [];
+            const addedRiskIds = new Set();
+
+            for (const item of allItemsMap.values()) {
+                if (item.fields['System.WorkItemType'] === 'Risk' && !addedRiskIds.has(item.id)) {
+                    let parent = null;
+                    const parentId = childToParentMap.get(item.id);
+                    if (parentId && hierarchyItemIds.has(parentId)) {
+                        parent = allItemsMap.get(parentId);
+                    }
+
+                    if (!parent && item.relations) {
+                        for (const rel of item.relations) {
+                            if (rel.url) {
+                                const linkedId = parseInt(rel.url.split('/').pop(), 10);
+                                if (hierarchyItemIds.has(linkedId)) {
+                                    parent = allItemsMap.get(linkedId);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (parent) {
+                        risks.push({ risk: item, parent: parent });
+                        addedRiskIds.add(item.id);
+                    }
+                }
+            }
+            return risks;
+        }
+
+        function findAssociatedOKRs(hierarchyItemIds, okrItemsMap, okrChildToParentMap) {
+            const okrs = [];
+            const addedOKRIds = new Set();
+            const allItemsMap = new Map(devopsData.items.map(item => [item.id, item]));
+
+            console.log("Finding OKRs for hierarchy items:", Array.from(hierarchyItemIds));
+            console.log("Available OKR items:", okrItemsMap.size);
+
+            // Strategy 1: Direct OKRs in the main DevOps hierarchy
+            for (const item of allItemsMap.values()) {
+                if (['Objective', 'Key Result'].includes(item.fields['System.WorkItemType']) && !addedOKRIds.has(item.id)) {
+                    if (hierarchyItemIds.has(item.id)) {
+                        // Find the direct parent Epic/Feature in the hierarchy
+                        let directParent = null;
+
+                        // Look through DevOps relations to find the direct parent
+                        for (const relation of devopsData.relations) {
+                            if (relation.target && relation.target.id === item.id && relation.rel === 'System.LinkTypes.Hierarchy-Forward') {
+                                const parentItem = allItemsMap.get(relation.source.id);
+                                if (parentItem && ['Initiative', 'Epic', 'Feature'].includes(parentItem.fields['System.WorkItemType'])) {
+                                    directParent = parentItem;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (directParent) {
+                            okrs.push({ 
+                                okr: item, 
+                                connectedTo: directParent,
+                                type: item.fields['System.WorkItemType']
+                            });
+                            addedOKRIds.add(item.id);
+                            console.log("Found hierarchy OKR:", item.fields['System.Title'], "in hierarchy with parent:", directParent.fields['System.WorkItemType'], directParent.fields['System.Title']);
+                        }
+                    }
+                }
+            }
+
+            // Strategy 2: OKRs from the dedicated OKR query that are connected through Epic/Feature relationships
+            for (const okr of okrItemsMap.values()) {
+                if (['Objective', 'Key Result'].includes(okr.fields['System.WorkItemType']) && !addedOKRIds.has(okr.id)) {
+
+                    // Look for any Epic or Feature in the OKR query that matches items in our initiative hierarchy
+                    for (const relation of okrData.relations) {
+                        if (relation.target && relation.target.id === okr.id && relation.rel === 'System.LinkTypes.Hierarchy-Forward') {
+                            const parentItem = okrItemsMap.get(relation.source.id);
+
+                            // Check if this parent is an Epic/Feature that exists in our main initiative hierarchy
+                            if (parentItem && ['Epic', 'Feature'].includes(parentItem.fields['System.WorkItemType'])) {
+
+                                // Look for this Epic/Feature in our main DevOps data
+                                const matchingMainItem = allItemsMap.get(parentItem.id);
+                                if (matchingMainItem && hierarchyItemIds.has(matchingMainItem.id)) {
+                                    okrs.push({ 
+                                        okr: okr, 
+                                        connectedTo: matchingMainItem,
+                                        type: okr.fields['System.WorkItemType']
+                                    });
+                                    addedOKRIds.add(okr.id);
+                                    console.log("Found connected OKR:", okr.fields['System.Title'], "via", parentItem.fields['System.WorkItemType'], parentItem.fields['System.Title']);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Strategy 3: Build OKR parent-child relationships and add Key Results under found Objectives
+            const okrParentToChildrenMap = new Map();
+            for (const okr of okrItemsMap.values()) {
+                okrParentToChildrenMap.set(okr.id, []);
+            }
+
+            okrData.relations.forEach(link => {
+                if (link.source && link.target && link.rel === 'System.LinkTypes.Hierarchy-Forward') {
+                    const parentId = link.source.id;
+                    const childId = link.target.id;
+                    if (okrParentToChildrenMap.has(parentId)) {
+                        okrParentToChildrenMap.get(parentId).push(childId);
+                    }
+                }
+            });
+
+            // Find Key Results under the Objectives we've already found
+            const foundObjectives = okrs.filter(item => item.type === 'Objective');
+            for (const objInfo of foundObjectives) {
+                const childKeyResults = okrParentToChildrenMap.get(objInfo.okr.id) || [];
+                for (const childId of childKeyResults) {
+                    const keyResult = okrItemsMap.get(childId);
+                    if (keyResult && keyResult.fields['System.WorkItemType'] === 'Key Result' && !addedOKRIds.has(keyResult.id)) {
+                        okrs.push({ 
+                            okr: keyResult, 
+                            connectedTo: objInfo.connectedTo,
+                            type: 'Key Result',
+                            parentObjective: objInfo.okr
+                        });
+                        addedOKRIds.add(keyResult.id);
+                        console.log("Adding Key Result:", keyResult.fields['System.Title'], "under Objective:", objInfo.okr.fields['System.Title']);
+                    }
+                }
+            }
+
+            console.log("Total OKRs found:", okrs.length);
+            return okrs.sort((a, b) => {
+                // Sort Objectives first, then Key Results
+                if (a.type !== b.type) {
+                    return a.type === 'Objective' ? -1 : 1;
+                }
+                return 0;
+            });
+        }
+
+        function getDevOpsItemUrl(itemId) {
+            const organization = "VolvoGroup-MASDCL";
+            const project = "VFSDITSA-1018751-COE LATAM";
+            return `https://dev.azure.com/${organization}/${encodeURIComponent(project)}/_workitems/edit/${itemId}`;
+        }
+
+        function buildHierarchyMaps(allItemsMap, relations) {
+            const parentToChildrenMap = new Map();
+            allItemsMap.forEach(item => {
+                parentToChildrenMap.set(item.id, []);
+            });
+
+            relations.forEach(link => {
+                if (link.source && link.target && link.rel === 'System.LinkTypes.Hierarchy-Forward') {
+                    const parentId = link.source.id;
+                    const childId = link.target.id;
+                    if (parentToChildrenMap.has(parentId)) {
+                        parentToChildrenMap.get(parentId).push(childId);
+                    }
+                }
+            });
+            return { parentToChildrenMap };
+        }
+
+        function getSortedHierarchy(initiative, allItemsMap, relations) {
+            const { parentToChildrenMap } = buildHierarchyMaps(allItemsMap, relations);
+            const allHierarchyItems = [];
+            const allDescendantIds = new Set();
+            const visited = new Set();
+
+            // Define hierarchy order for work item types
+            const typeOrder = {
+                'Initiative': 0,
+                'Epic': 1,
+                'Feature': 2,
+                'User Story': 3,
+                'Task': 4,
+                'Bug': 5,
+                'Risk': 6
+            };
+
+            function dfs(itemId, level, parentSortOrder = 0) {
+                if (visited.has(itemId)) return;
+                visited.add(itemId);
+
+                const item = allItemsMap.get(itemId);
+                if (!item) return;
+
+                allDescendantIds.add(item.id);
+                item.ganttLevel = level;
+                item.typeOrder = typeOrder[item.fields['System.WorkItemType']] || 999;
+                item.hierarchyOrder = allHierarchyItems.length; // Maintain DFS order
+                item.parentSortOrder = parentSortOrder;
+                allHierarchyItems.push(item);
+
+                const childrenIds = parentToChildrenMap.get(itemId) || [];
+                // Sort children by type order and then by start date
+                const sortedChildren = childrenIds
+                    .map(id => ({ id, item: allItemsMap.get(id) }))
+                    .filter(({ item }) => item)
+                    .sort((a, b) => {
+                        const aTypeOrder = typeOrder[a.item.fields['System.WorkItemType']] || 999;
+                        const bTypeOrder = typeOrder[b.item.fields['System.WorkItemType']] || 999;
+
+                        if (aTypeOrder !== bTypeOrder) {
+                            return aTypeOrder - bTypeOrder;
+                        }
+
+                        // If same type, sort by start date
+                        const aStartDate = a.item.fields['Microsoft.VSTS.Scheduling.StartDate'];
+                        const bStartDate = b.item.fields['Microsoft.VSTS.Scheduling.StartDate'];
+
+                        if (aStartDate && bStartDate) {
+                            return new Date(aStartDate) - new Date(bStartDate);
+                        }
+
+                        return 0;
+                    })
+                    .map(({ id }) => id);
+
+                // Recursively process children maintaining hierarchy order
+                sortedChildren.forEach((childId, index) => {
+                    dfs(childId, level + 1, parentSortOrder + index);
+                });
+            }
+
+            dfs(initiative.id, 0);
+
+            // Filter items with valid dates and maintain hierarchical order
+            const orderedItems = allHierarchyItems
+                .filter(item =>
+                    item.fields['Microsoft.VSTS.Scheduling.StartDate'] && 
+                    item.fields['Microsoft.VSTS.Scheduling.TargetDate']
+                )
+                .sort((a, b) => {
+                    // Sort by the order they were discovered in DFS (maintaining hierarchy)
+                    return a.hierarchyOrder - b.hierarchyOrder;
+                });
+
+            return { orderedItems, allDescendantIds };
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.backgroundColor = isError ? '#EF4444' : '#10B981';
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        // --- DIRECTORS BUTTON FUNCTIONALITY ---
+        document.getElementById('generate-direct-link-btn').addEventListener('click', () => {
+            const directLinkSection = document.getElementById('direct-link-section');
+            directLinkSection.classList.toggle('hidden');
+            
+            if (!directLinkSection.classList.contains('hidden')) {
+                populateDirectorSelect();
+            }
+        });
+
+        document.getElementById('director-select').addEventListener('change', (e) => {
+            const selectedDirector = e.target.value;
+            const directLinkInput = document.getElementById('direct-link-input');
+            const copyBtn = document.getElementById('copy-link-btn');
+            
+            if (selectedDirector) {
+                // Generate direct link with director filter
+                const currentURL = new URL(window.location.href);
+                currentURL.searchParams.set('director', selectedDirector);
+                currentURL.searchParams.set('mode', 'portfolio');
+                
+                directLinkInput.value = currentURL.toString();
+                copyBtn.disabled = false;
+            } else {
+                directLinkInput.value = '';
+                directLinkInput.placeholder = 'Select a director to generate link';
+                copyBtn.disabled = true;
+            }
+        });
+
+        // Copy link button functionality
+        document.getElementById('copy-link-btn').addEventListener('click', async () => {
+            const directLinkInput = document.getElementById('direct-link-input');
+            try {
+                await navigator.clipboard.writeText(directLinkInput.value);
+                showToast('Link copied to clipboard!');
+            } catch (error) {
+                console.error('Failed to copy link:', error);
+                showToast('Failed to copy link. Please copy manually.', true);
+            }
+        });
+
+        // Function to populate the director select dropdown
+        function populateDirectorSelect() {
+            const directorSelect = document.getElementById('director-select');
+            const businessOwners = new Set();
+
+            // Get unique business owners from local initiative data
+            localInitiativeData.forEach((data) => {
+                if (data.businessOwner && data.businessOwner.trim()) {
+                    businessOwners.add(data.businessOwner.trim());
+                }
+            });
+
+            // Clear existing options except the first one
+            directorSelect.innerHTML = '<option value="">All Directors</option>';
+
+            // Add business owners as options
+            Array.from(businessOwners)
+                .sort()
+                .forEach(owner => {
+                    const option = document.createElement('option');
+                    option.value = owner;
+                    option.textContent = owner;
+                    directorSelect.appendChild(option);
+                });
+        }
+
+        // Default initiative data
+        const defaultInitiativeData = {
+            "1076346": {
+                market: "Brazil",
+                dpm: "Alberto Muller Neto",
+                businessOwner: "Felipe Brandão",
+                po: "Liana Camillo",
+                tdpo: "Nathan Souza",
+                extCost: "169.72",
+                intRes: "169.72",
+                deadlineStatus: "green"
+            },
+            "1079740": {
+                market: "Peru",
+                dpm: "Alberto Muller Neto",
+                businessOwner: "Ricardo Magalhães",
+                po: "",
+                tdpo: "Marcus Levy",
+                extCost: "0",
+                intRes: "550",
+                deadlineStatus: "green"
+            },
+            "1167614": {
+                market: "Brazil",
+                dpm: "Bruno Tozo",
+                businessOwner: "Jose Olimpio",
+                po: "Suellen Monteiro",
+                tdpo: "Marcus Levy",
+                extCost: "0",
+                intRes: "0",
+                deadlineStatus: "green"
+            }
+        };
+
+        // --- FUNÇÕES FIRESTORE ---
+        async function saveAllInitiativeData() {
+            const initiativesToSave = Object.fromEntries(localInitiativeData);
+
+            // 1. Salvar no Azure SQL
+            try {
+                const response = await fetch('/api/saveInitiative', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ initiatives: initiativesToSave })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    console.log("Dados salvos no Azure SQL");
+                    showToast("Dados salvos no Azure SQL!");
+                } else {
+                    throw new Error(result.message || "Erro ao salvar no Azure SQL");
+                }
+            } catch (error) {
+                console.log("Falha ao salvar no Azure SQL:", error);
+                showToast("Falha ao salvar no Azure SQL!", true);
+            }
+
+            // 2. Salvar no Firebase (backup)
+            if (db) {
+                try {
+                    const publicDataDocRef = doc(db, "public_data", "oneview_initiatives");
+                    await setDoc(publicDataDocRef, {
+                        initiatives: initiativesToSave,
+                        lastUpdated: new Date().toISOString()
+                    });
+                    console.log("Dados salvos no Firebase");
+                } catch (error) {
+                    console.log("Falha ao salvar no Firebase:", error);
+                }
+            }
+
+            // 3. Backup localStorage
+            try {
+                localStorage.setItem('volvo_oneview_data', JSON.stringify(initiativesToSave));
+                console.log("Dados salvos no localStorage como backup");
+            } catch (error) {
+                console.error("Erro ao salvar backup no localStorage:", error);
+            }
+        }
+
+        async function loadAllInitiativeData() {
+            console.log("Iniciando carregamento de dados...");
+
+            // 1. Tentar carregar do Azure SQL
+            try {
+                const response = await fetch('/api/initiatives');
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success && result.initiatives && Object.keys(result.initiatives).length > 0) {
+                        localInitiativeData.clear();
+                        for (const id in result.initiatives) {
+                            localInitiativeData.set(id, result.initiatives[id]);
+                        }
+                        console.log("Dados carregados do Azure SQL:", Object.keys(result.initiatives).length, "iniciativas");
+                        // Backup no localStorage
+                        localStorage.setItem('volvo_oneview_data', JSON.stringify(result.initiatives));
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.log("Erro ao carregar do Azure SQL:", error);
+            }
+
+            // 2. Tentar carregar do Firebase
+            if (db) {
+                try {
+                    const publicDataDocRef = doc(db, "public_data", "oneview_initiatives");
+                    const publicDocSnap = await getDoc(publicDataDocRef);
+
+                    if (publicDocSnap.exists() && publicDocSnap.data().initiatives) {
+                        const initiativesFromDb = publicDocSnap.data().initiatives;
+                        if (initiativesFromDb && Object.keys(initiativesFromDb).length > 0) {
+                            localInitiativeData.clear();
+                            for (const id in initiativesFromDb) {
+                                localInitiativeData.set(id, initiativesFromDb[id]);
+                            }
+                            console.log("Dados carregados do Firebase:", Object.keys(initiativesFromDb).length, "iniciativas");
+                            localStorage.setItem('volvo_oneview_data', JSON.stringify(initiativesFromDb));
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.log("Erro ao carregar do Firebase:", error);
+                }
+            }
+
+            // 3. Tentar localStorage
+            try {
+                const localData = localStorage.getItem('volvo_oneview_data');
+                if (localData) {
+                    const parsedData = JSON.parse(localData);
+                    if (parsedData && Object.keys(parsedData).length > 0) {
+                        localInitiativeData.clear();
+                        for (const id in parsedData) {
+                            localInitiativeData.set(id, parsedData[id]);
+                        }
+                        console.log("Dados carregados do localStorage:", Object.keys(parsedData).length, "iniciativas");
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.log("Erro ao carregar do localStorage:", error);
+            }
+
+            // 4. Fallback
+            await loadFallbackData();
+        }
+
+        async function loadFallbackData() {
+            console.log("Carregando dados fallback");
+            localInitiativeData.clear();
+
+            // Mesclar dados fallback com dados que possam estar no Firebase
+            for (const id in fallbackInitiativeData) {
+                localInitiativeData.set(id, fallbackInitiativeData[id]);
+            }
+
+            console.log("Dados fallback carregados:", Object.keys(fallbackInitiativeData).length, "iniciativas");
+
+            // Tentar salvar os dados fallback no Firebase para sincronização
+            if (db) {
+                try {
+                    const publicDataDocRef = doc(db, "public_data", "oneview_initiatives");
+                    const publicDocSnap = await getDoc(publicDataDocRef);
+
+                    if (!publicDocSnap.exists()) {
+                        await setDoc(publicDataDocRef, {
+                            initiatives: fallbackInitiativeData,
+                            lastUpdated: new Date().toISOString()
+                        });
+                        console.log("Dados  fallback salvos no Firebase para sincronização");
+                    }
+                } catch (error) {
+                    console.log("Erro ao salvar dados fallback no Firebase:", error);
+                }
+            }
+        }
+
+        function getUniqueMarketsFromInitiativeData() {
+            const markets = new Set();
+            for (const data of localInitiativeData.values()) {
+                if (data.market && data.market.trim()) {
+                    markets.add(data.market.trim());
+                }
+            }
+            // Garante que todos os markets do array fixo também aparecem
+            marketOptions.forEach(m => markets.add(m));
+            return Array.from(markets);
+        }
+    </script>
+</body>
+</html>

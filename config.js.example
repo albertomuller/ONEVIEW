@@ -1,0 +1,11 @@
+// Configuration file for Azure DevOps integration
+// This file should be created locally and not committed to version control
+
+window.AZURE_DEVOPS_CONFIG = {
+    PAT: 'your_pat_here',
+    organization: 'VolvoGroup-MASDCL',
+    project: 'VFSDITSA-1018751-COE LATAM'
+};
+
+// Set global variable for backward compatibility
+window.AZURE_DEVOPS_PAT = window.AZURE_DEVOPS_CONFIG.PAT;

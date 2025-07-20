@@ -1,0 +1,58 @@
+[33m492a56b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Add initial implementation of Volvo OneView application with login and demo modes
+[33m66c27f9[m feat: integrate auth and portfolio management
+[33m0d047b2[m Implement code changes to enhance functionality and improve performance
+[33mc2dcb95[m Implement feature X to enhance user experience and optimize performance
+[33ma1bacbc[m Enhance login page with improved styling, MSAL integration, and demo mode functionality
+[33m9b38486[m feat: Implement authentication check and Microsoft login integration in index and login pages
+[33ma49f5e0[m refactor: Improve configuration validation and error handling in index.html
+[33m5ad28d8[m Implement code changes to enhance functionality and improve performance
+[33m00f2b17[m Merge branches 'main' and 'main' of https://dev.azure.com/VolvoGroup-MASDCL/APPLICATIONS/_git/ONEVIEW
+[33m99d0aee[m feat: Add migration page and functionality for Firebase to Azure SQL
+[33mf59d661[m[33m ([m[1;32mbackup-azure-integration[m[33m)[m Implement feature X to enhance user experience and optimize performance
+[33m66dd936[m Revert " COMPLETE: OneView Azure SQL migration ready for production"
+[33m573aac4[m Merge branch 'main' of https://dev.azure.com/VolvoGroup-MASDCL/APPLICATIONS/_git/ONEVIEW
+[33mca488f1[m 🔄 ROLLBACK: Revert to commit 1055ff1 - Clean state
+[33mf1aa148[m Add Firebase configuration and initialization to migrate.html
+[33m38c3d61[m  FORCE: Azure SQL connection debugging
+[33m61f442d[m  COMPLETE: OneView Azure SQL migration ready for production
+[33m1055ff1[m  REAL MIGRATION: Connect to Azure SQL Database
+[33m4efc86b[m  TEST: Minimal migrate endpoint for debugging
+[33mcefaa0a[m  REAL DATA: Firebase migration with actual production data
+[33mb0918c0[m  PERFECT: Migration tool ready for production
+[33m1c203b6[m  MIGRATION READY: Complete Firebase to Azure SQL migration tool
+[33m9b0c258[m  READY: Complete Azure SQL Users table structure
+[33mfa60a22[m FIX: Simplify initiatives API structure and improve error handling
+[33m4392937[m  FIX: Copy working code from initiatives-simple to initiatives
+[33mae642e5[m  READY: Fixed initiatives endpoint with correct structure
+[33m0bc6ad8[m  READY: initiatives-simple endpoint configured
+[33mb222fa5[m  FIXED: Corrected initiatives function.json
+[33m1002b05[m ENHANCE: Add health check functionality with detailed response and database connection status
+[33m1cd170f[m ENHANCE: Improve health check with detailed database connection tests and multiple authentication methods
+[33m7a91d89[m  CONNECT: Azure SQL Server with Azure AD Integrated Auth
+[33m06c1c91[m V1
+[33me91b1ee[m V1
+[33mc76e223[m V1 working
+[33m7e69689[m  RESTORE: Azure Static Web Apps to original working version
+[33m557581b[m V1
+[33m663ff6f[m  RESTORE: Back to working Firebase version
+[33me3def31[m  Reset: Back to working state - clean minimal setup
+[33m91ba1eb[m Add authentication test script and enhance server database connection handling
+[33m1434c7d[m  Fix: Configure Azure Static Web Apps with Functions API
+[33m60a21f6[m removing login necessity
+[33m37ec709[m Add detailed credential testing and SQL connection validation
+[33mc860970[m db auth
+[33ma0d8e20[m Update index.html structure and styling for improved layout
+[33m1a11747[m Add package.json and build configuration for Azure Static Web Apps
+[33me108dd8[m Add package.json and build configuration for Azure Static Web Apps
+[33m14e00e9[m remocaofb v2
+[33m859f37d[m remocaofirebase
+[33m007abb1[m conexao com banco
+[33m5e6038f[m Fix: Ensure database connection and field creation logic
+[33me02cccf[m Refactor: Move frontend logic to login.html and clean up server.js
+[33m3e36855[m db config v1
+[33mb877f5f[m new db
+[33m329f94e[m sinc.dados
+[33m8ab14cc[m Implementacao
+[33m6ba23b0[m nova pagina
+[33mb886917[m ci: add Azure Static Web Apps workflow file on-behalf-of: @Azure opensource@microsoft.com
+[33m4b72453[m Added README.md
