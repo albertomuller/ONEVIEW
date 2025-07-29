@@ -1,0 +1,19 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- checkout: self
+  submodules: true
+- task: AzureStaticWebApp@0
+  inputs:
+    app_location: "/"
+    api_location: "api"
+    skip_app_build: true
+    skip_api_build: true
+    api_runtime: "node:18"
+    azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN)
+    production_branch: "main"
+  displayName: 'Deploy Production to Azure Static Web App'
